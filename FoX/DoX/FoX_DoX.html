@@ -1,0 +1,2025 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>FoX_DoX</title>
+  <link rel="stylesheet" type="text/css" href="DoX.css"/>
+</head>
+<body>
+  <div class="DoX">
+<a name="FoX"/>
+<h1>FoX documentation.</h1>
+
+<p><a href="FoX_DoX.html">All in one page</a></p>
+
+<p><a href="FoX.html">Separate pages</a></p>
+
+<h2>Introduction</h2>
+
+<ul>
+<li><p><a href="#Versioning">Versioning</a></p></li>
+<li><p><a href="#Compilation">Configuration and compilation</a></p></li>
+<li><p><a href="#Embedding">Embedding into an existing project</a></p></li>
+</ul>
+
+<h2>API documentation</h2>
+
+<ul>
+<li>FoX has four sets of publically exported interfaces. These are documented here:</li>
+</ul>
+
+<h3>COMMON interface</h3>
+
+<ul>
+<li><a href="#FoX_common">FoX_common</a></li>
+</ul>
+
+<h3>OUTPUT interfaces</h3>
+
+<ul>
+<li><a href="#FoX_wxml">FoX_wxml</a></li>
+<li><a href="#FoX_wcml">FoX_wcml</a></li>
+</ul>
+
+<h3>INPUT interface</h3>
+
+<ul>
+<li><a href="#FoX_sax">FoX_sax</a></li>
+</ul>
+
+<p>These documents describe all publically usable APIs.</p>
+
+<p>If a subroutine or function, or indeed one of its arguments, is not mentioned above, it is not to be considered part of the stable API, even if it is accessible.</p>
+
+<p>The astute developer is reminded that all times the final reference documentation is the source, which is publically available.</p>
+
+<h2>Other things</h2>
+
+<ul>
+<li><p><a href="#Debugging">Hints for debugging</a></p></li>
+<li><p><a href="#Information">Further information</a></p></li>
+<li><p><a href="#Licensing">Licensing</a></p></li>
+</ul>
+</div><hr/><div class="DoX">
+<a name="Versioning"/>
+<h1>FoX versioning</h1>
+
+<p>This documentation describes version 2.1 of the FoX library</p>
+
+<p>FoX was originally based on the version 1.2 of the <a href="http://lcdx00.wm.lc.ehu.es/ag/xml/">xmlf90</a> library, but has since evolved heavily.</p>
+
+<p>This release version includes output modules for general XML, and for CML, and also a Fortran version of the SAX2 input parser interface</p>
+
+<p>This is a stable branch, which will be maintained with important bugfixes, but on which no further major development will occur.</p>
+
+<p>Version 2.1 has support for outputting complete XML documents, with support for all XML objects described in XML11, and XML Namespaces. A detailed description of its precise conformance level is in the WXML documentation.</p>
+
+<p>In addition, there is a large suite of routines available for outputting valid <a href="http://www.xml-cml.org">CML</a> documents.</p>
+
+<p>There is also a SAX input module, compatible with the SAX 2 standard - pprecise conformance details listed in the SAX documentation.</p>
+
+<p>Input modules are under development for DOM and XPath, and will be released with a later version.</p>
+</div><hr/><div class="DoX">
+<a name="Compilation"/>
+<h1>Configuration and compilation</h1>
+
+<p>You will have received the FoX source code as a tar.gz file.</p>
+
+<p>Unpack it as normal, and change directory into the top-level directory, FoX.</p>
+
+<h3>Requirements for use</h3>
+
+<p>FoX requires a Fortran 95 compiler - not just Fortran 90. All currently available versions of Fortran compilers claim to support F95. If your favoured compiler is not listed as working below, I recommend the use of <a href="www.g95.org">g95</a>, which is free to download and use. And if your favourite compiler is listed as not working, then please send a bug report to your compiler vendor.</p>
+
+<p>Version 2.1.0 has been tested extensively on g95 and NAG, and is known to work on g95 (2006-11-21), and NAG Fortran 5.0, patch 391. Results from other compilers are welcome.</p>
+
+<p>As of version 2.0.2, the following compilers were tested and are known to work:</p>
+
+<ul>
+<li>gfortran, version 4.2 (as of 2006-07-09)</li>
+<li>g95 (version of 2006-08-01, earlier versions untested)</li>
+<li>Intel Fortran version 9.0 and above (previous versions may compile, but do not work correctly.)</li>
+<li>Lahey version 6.20 (previous versions untested)</li>
+<li>NAG version 5.0 (patch 391 and later) or 5.1</li>
+<li>Pathscale, version 2.4 (previous versions untested)</li>
+<li>XLF version 9.1 (previous versions untested)</li>
+</ul>
+
+<p>and the following compilers tested and known to fail</p>
+
+<ul>
+<li>gfortran prior to and including version 4.1</li>
+<li>Intel Fortran prior to version 9.0</li>
+<li>NAG versions prior to 5.0-391</li>
+<li>PGI, all versions (bug reported #3897)</li>
+<li>Sun Fortran 95 7.1 Patch 112762-16 2005/10/25 (later versions untested)</li>
+</ul>
+
+<p>Other compilers are untested; reports of their success or failure are welcomed.</p>
+
+<h2>Configuration</h2>
+
+<ul>
+<li><p>In order to generate the Makefile, make sure that you have a Fortran compiler in your <code>PATH</code>, and do:</p>
+
+<p><code>config/configure</code></p></li>
+</ul>
+
+<p>This should suffice for most installations. However:</p>
+
+<ol>
+<li><p>If you have more than one Fortran compiler available, or it is not on your <code>PATH</code>, you can force the choice by doing:</p>
+
+<p><code>config/configure FC=/path/to/compiler/of/choice</code></p></li>
+<li><p>It is possible that the configuration fails. In this case</p>
+
+<ul>
+<li>please tell me about it so I can fix it</li>
+<li>all relevant compiler details are placed in the file arch.make; you may be able to edit that file to allow compilation. Again, if so, please let me know what you need to do.</li>
+</ul></li>
+<li><p>By default the resultant files are installed under the objs directory. If you wish them to be installed elsewhere, you may do</p>
+
+<p><code>config/configure --prefix=/path/to/installation</code></p></li>
+</ol>
+
+<p>Note that the configure process encodes the current directory location in several
+places.  If you move the FoX directory later on, you will need to re-run configure.</p>
+
+<h2>Compilation</h2>
+
+<p>In order to compile the full library, now simply do:</p>
+
+<pre><code>make
+</code></pre>
+
+<p>This will build all the FoX modules, and all the examples.
+However, you may only be interested in building the libraries, or perhaps a subset of the libraries. In that case, the following targets are available:</p>
+
+<pre><code>wxml_lib
+wcml_lib
+sax_lib
+</code></pre>
+
+<h2>Testing</h2>
+
+<p>Three test-suites are supplied; in <code>common/test</code>, <code>wxml/test</code>, and <code>wcml/test</code>. In each case, <code>cd</code> to the relevant directory and then run <code>./run_tests.sh</code>.</p>
+
+<p>(The sax testsuite is available separately. Please contact the author for details.)</p>
+
+<p>The tests will run and then print out the number of passes and fails. Details of failing tests may be found in the file <code>failed.out</code>.</p>
+
+<p>Known failures: <br />
+* <code>test_xml_Close_2</code> sometimes unexpectedly fails - this is not a problem, ignore it.  </p>
+
+<p>If any other failures occur, please send a message to the mailing list (<a href="&#109;a&#105;&#x6C;&#116;&#111;:&#x46;&#111;&#88;&#64;&#x6C;&#x69;&#x73;&#x74;&#115;&#x2E;&#117;&#x73;&#122;&#x6C;&#x61;&#46;&#109;&#x65;&#x2E;&#x75;&#107;">&#x46;&#111;&#88;&#64;&#x6C;&#x69;&#x73;&#x74;&#115;&#x2E;&#117;&#x73;&#122;&#x6C;&#x61;&#46;&#109;&#x65;&#x2E;&#x75;&#107;</a>) with details of compiler, hardware platform, and the nature of the failure.</p>
+
+<h2>Linking to an existing program</h2>
+
+<ul>
+<li>The files all having been compiled and installed, you need to link them into your program.</li>
+</ul>
+
+<p>A script is provided which will provide the appropriate compiler and linker flags for you; this will be created after configuration, in the top-level directory, and is called <code>FoX-config</code>. It may be taken from there and placed anywhere.</p>
+
+<p>FoX-config takes the following arguments:</p>
+
+<ul>
+<li><code>--fcflags</code>: return flags for compilation</li>
+<li><code>--libs</code>: return flags for linking</li>
+<li><code>--wxml</code>: return flags for compiling/linking against wxml</li>
+<li><code>--wcml</code>: return flags for compiling/linking against wcml</li>
+<li><code>--sax</code>: return flags for compiling/linking against sax</li>
+</ul>
+
+<p>If it is called with no arguments, it will expand to compile &amp; link flags, thusly:</p>
+
+<pre><code>   f95 -o program program.f90 `FoX-config`
+</code></pre>
+
+<p>For compiling only against FoX, do the following:</p>
+
+<pre><code>f95 -c `FoX-config --fcflags` sourcefile.f90
+</code></pre>
+
+<p>For linking only to the FoX library, do:</p>
+
+<pre><code>f95 -o program `FoX-config --libs` *.o
+</code></pre>
+
+<p>or similar, according to your compilation scheme. </p>
+
+<p>Note that by default, <code>FoX-config</code> assumes you are using all modules of the library. If you are only using part, then this can be specified by also passing the name of each module required, like so:</p>
+
+<pre><code>FoX-config --fcflags --wcml
+</code></pre>
+</div><hr/><div class="DoX">
+<a name="Embedding"/>
+<h1>Using FoX in your own project.</h1>
+
+<p>The recommended way to use FoX is to embed the full source code into an existing project.</p>
+
+<p>(It would be possible to extract portions of the code, and embed just the ones that you need, but I recommend against it; it would be easy to lose parts of the code which are essential for generating good XML.)</p>
+
+<p>In order to do this, you need to do something like the following:</p>
+
+<ol>
+<li>Put the full source code as a top-level subdirectory of the tree, called FoX.
+(you can of course delete the DoX/ and examples/ subdirectories if you wish to 
+save space)</li>
+<li>Incorporate calls to FoX into the program.</li>
+<li>Incorporate building FoX into your build process.</li>
+</ol>
+
+<h2>To incorporate into the program</h2>
+
+<p>There is an example of suggested use in the <code>examples/</code> subdirectory.</p>
+
+<p>The easiest, and least intrusive way is probably to create a F90 module for your program, looking something like <code>example_xml_module.f90</code></p>
+
+<p>Then you must somewhere (probably in your main program), use this module, and call <code>initialize_xml_output()</code> at the start; and then <code>end_xml_output()</code> at the end of the program.</p>
+
+<p>In any of the subroutines where you want to output data to the xml file, you should then insert <code>use example_cml_moule</code> at the beginning of the subroutine. You can then use any of the cml output routines with no further worries, as shown in the examples.</p>
+
+<p>It is easy to make the use of FoX optional, by the use of preprocessor defines. This can be done simply by wrapping each call to your XML wrapper routines in <code>#ifdef XML</code>, or similar.</p>
+
+<h2>To incorporate into the build process:</h2>
+
+<p>If you have some sort of automatic Makefile configuration; for picking up which compiler to use, etc. then within whatever script you use to do this, you should insert a sequence of commands like:</p>
+
+<pre><code>(cd FoX; config/configure; cd ..)
+</code></pre>
+
+<p>This will instruct FoX to perform its own automatic configuration process.</p>
+
+<p>Within the Makefile itself, you need to alter your compiler flags in the following fashion. Assuming that you have some sort of FFLAGS Makefile variable, then it should be amended like so:</p>
+
+<pre><code>FFLAGS="$(FFLAGS) `FoX/FoX-config --fcflags`"
+</code></pre>
+
+<p>You must also alter the linking step to include the FoX subroutines Again, assuming that you have some sort of variable LDFLAGS holding your linking flags, then it should be amended like so:</p>
+
+<pre><code>LDFLAGS="$(LDFLAGS) `FoX/FoX-config --libs`"
+</code></pre>
+
+<p>If you don't have any automatic Makefile configuration, and rely on the user making hand-edited changes to Makefiles, then you must add to your documentation how to configure &amp; build FoX.</p>
+</div><hr/><div class="DoX">
+<a name="FoX_common"/>
+<h1>FoX_common</h1>
+
+<p>FoX_common is a module exporting interfaces to a set of convenience functions common to all of the FoX modules, which are of more general use.</p>
+
+<p>Currently, the only publically available function is <code>str</code>, which converts primitive datatypes into strings in a consistent fashion, conformant with the expectations of XML processors.</p>
+
+<p>It is fully described in <a href="#StringFormatting">StringFormatting</a></p>
+</div><hr/><div class="DoX">
+<a name="StringFormatting"/>
+<h1>String handling in FoX</h1>
+
+<p>Many of the routines in wxml, and indeed in wcml which is built on top of wxml, are overloaded so that data may be passed to the same routine as string, integer, logical or real data.</p>
+
+<p>In such cases, a few notes on the conversion of non-textual data to text is on order. The
+standard Fortran I/O formatting routines do not offer the control required for useful XML output, so FoX performs all its own formatting.</p>
+
+<p>This formatting is done internally through a function which is also available publically to the user, <code>str</code>.</p>
+
+<p>To use this in your program, import it via:</p>
+
+<pre><code>use FoX_common, only; str
+</code></pre>
+
+<p>and use it like so:</p>
+
+<pre><code> print*, str(data)
+</code></pre>
+
+<p>In addition, for ease of use, the <code>//</code> concatenation operator is overloaded, such that strings can easily be formed by concatenation of strings to other datatypes. To use this you must import it via:</p>
+
+<pre><code> use FoX_common, only: operator(//)
+</code></pre>
+
+<p>and use it like so:</p>
+
+<pre><code> integer :: data
+ print*, "This is a number "//data
+</code></pre>
+
+<p>This will work for all native Fortran data types - but no floating point formatting is available as described below with concatenation, only with str()</p>
+
+<p>You may pass data of the following primitive types to <code>str</code>:</p>
+
+<h2>Scalar data</h2>
+
+<h3>Character (default kind)</h3>
+
+<p>Character data is returned unchanged.</p>
+
+<h3>Logical (default kind)</h3>
+
+<p>Logical data is output such that True values are converted to the string 'true', and False to the string 'false'.</p>
+
+<h3>Integer (default kind)</h3>
+
+<p>Integer data is converted to the standard decimal representation.</p>
+
+<h3>Real numbers (single and double precision)</h3>
+
+<p>Real numbers, both single and double precision, are converted to strings in one of two ways, with some control offered to the user. The output will conform to the real number formats specified by XML Schema Datatypes.</p>
+
+<p>This may be done in one of two ways:</p>
+
+<ol>
+<li><p>Exponential notation, with variable number of significant figures. Format strings of the form "<code>s</code><strong>n</strong>"  are accepted, where <strong>n</strong> is the number of significant figures.</p>
+
+<p>Thus the number <code>111</code>, when output with various formats, will produce the following output:</p></li>
+</ol>
+
+<table class="format">
+<tr>
+  <td class="format"> s1 </td><td> 1e2 </td>
+</tr><tr>
+  <td> s2 </td><td> 1.1e2 </td>
+</tr><tr>
+  <td> s3 </td><td> 1.11e2 </td>
+</tr><tr>
+  <td> s4 </td><td> 1.110e2 </td>
+</tr>
+</table>
+
+<p>The number of significant figures should lie between 1 and the number of digits precision provided by the real kind. If a larger or smaller number is specified, output will be truncated accordingly. If unspecified, then a sensible default will be chosen.</p>
+
+<p>This format is not permitted by XML Schema Datatypes 1.0, though it is in 2.0</p>
+
+<ol>
+<li><p>Non-exponential notation, with variable number of digits after the decimal point. Format strings of the form "<code>r</code><strong>n</strong>", where <strong>n</strong> is the number of digits after the decimal point.</p>
+
+<p>Thus the number <code>3.14159</code>, when output with various formats, will produce the following output:</p></li>
+</ol>
+
+<table class="format">
+<tr>
+  <td> r0 </td><td> 3 </td>
+</tr><tr>
+  <td> r1 </td><td> 3.1</td>
+</tr><tr>
+  <td> r2 </td><td> 3.14</td>
+</tr><tr>
+  <td> r3 </td><td> 3.142 </td>
+</tr>
+</table>
+
+<p>The number of decimal places must lie between 0 and whatever would output the maximum digits precision for that real kind.  If a larger or smaller number is specified, output will be truncated accorsingly. If unspecified, then a sensible default will be chosen.</p>
+
+<p>This format is the only one permitted by XML Schema Datatypes 1.0</p>
+
+<p>If no format is specified, then a default of exponential notation will be used.</p>
+
+<p>If a format is specified not conforming to either of the two forms above, a run-time error will be generated.</p>
+
+<p><strong>NB</strong> Since by using FoX or str, you are passing real numbers through various functions, this means that
+       they must be valid real numbers. A corollary of this is that if you pass in +/-Infinity, or NaN, then
+       the behaviour of FoX is unpredictable, and may well result in a crash. This is a consequence of the
+       Fortran standard, which strictly disallows doing anything at all with such numbers, including even
+       just passing them to a subroutine.</p>
+
+<h2>Complex numbers (single and double precision)</h2>
+
+<p>Complex numbers will be output as pairs of real numbers, in the following way:</p>
+
+<p><code>(1.0e0)+i(1.0e0)</code></p>
+
+<p>where the two halves can be formatted in the way described for 'Real numbers' above; only one format may be specified, and it will apply to both.</p>
+
+<p>All the caveats described above apply for complex number as well; that is, output of complex numbers either of whose components are infinite or NaN is illegal in Fortran, and more than likely will cause a crash in FoX.</p>
+
+<h2>Arrays and matrices</h2>
+
+<p>All of the above types of data may be passed in as arrays and matrices as well. In this case, a string containing all the individual elements will be returned, ordered as they would be in memory, each element separated by a single space.</p>
+
+<p>If the data is character data, then there is an additional option to str, <code>delimiter</code> which may be any single-character string, and will replace a space as the delimiter.</p>
+
+<h2>wxml/wcml wrappers.</h2>
+
+<p>All functions in wxml which can accept arbitrary data (roughly, wherever you put anything that is not an XML name; attribute values, pseudo-attribute values, character data) will take scalars, arrays, and matrices of any of the above data types, with <code>fmt=</code> and <code>delimiter=</code> optional arguments where appropriate.</p>
+
+<p>Similarly, wcml functions which can accept varied data will behave similarly.</p>
+</div><hr/><div class="DoX">
+<a name="FoX_wxml"/>
+<h1>WXML</h1>
+
+<p><code>wxml</code> is a general Fortran XML output library. It offers a Fortran interface, in the form of a number of subroutines,  to generate well-formed XML documents. Almost all of the XML features described in <a href="#XML11">XML11</a>  and <a href="#Namespaces">Namespaces</a> are available, and <code>wxml</code> will diagnose almost all attempts to produce an invalid document. <a href="#Exceptions">Exceptions</a> below describes where <code>wxml</code> falls short of these aims.</p>
+
+<p>First, <a href="#Conventions">Conventions</a> describes the conventions use in this document.</p>
+
+<p>Then, <a href="#Functions">Functions</a> lists all of <code>wxml</code>'s publically exported functions, in three sections:</p>
+
+<ol>
+<li><a href="#simple">Firstly</a>, the very few functions necessary to create the simplest XML document, containing only elements, attributes, and text. </li>
+<li><a href="#NSfunctions">Secondly</a>, those functions concerned with XML Namespaces, and how Namespaces affect the behaviour of the first tranche of functions.  </li>
+<li><a href="#obscure">Thirdly</a>, a set of more rarely used functions required to access some of the more esoteric corners of the XML specification.</li>
+</ol>
+
+<p>Please note that where the documentation below is not clear, it may be useful to look at some of the example files. There is a very simple example in the <code>examples/</code> subdirectory, but which nevertheless shows the use of most of the features you will use.</p>
+
+<p>A more elaborate example, using almost all of the XML features found here, is available in the top-level directory as <code>wxml_example.f90</code>. It will be automatically compiled as part of the build porcess.</p>
+
+<p><a name="Conventions"/></p>
+
+<h2>Conventions and notes:</h2>
+
+<h4>Conventions used below.</h4>
+
+<ul>
+<li>Function names are in <code>monospace</code></li>
+<li>argument names are in <strong>bold</strong></li>
+<li>optional argument names are in (<strong>parenthesized bold</strong>)</li>
+<li>argument types are in <em>italic</em> and may consist of:</li>
+<li><em>string</em>: string of arbitrary (unless otherwise specified) length</li>
+<li><em>integer</em>: default integer</li>
+<li><em>real(sp)</em>: single precision real number</li>
+<li><em>real(dp)</em>: double precision real number</li>
+<li><em>logical</em>: default logical </li>
+<li><em>real</em>: either of <em>real(sp)</em> or <em>real(dp)</em></li>
+<li><em>anytype</em>: any of <em>logical</em>, <em>integer</em>, <em>real(sp)</em>, <em>real(dp)</em>, <em>string</em></li>
+</ul>
+
+<p>Note that where <em>strings</em> are passed in, they will be passed through entirely unchanged to the output file - no truncation of whitespace will occur.</p>
+
+<p>It is strongly recommended that the functions be used with keyword arguments rather than replying on implicit ordering.</p>
+
+<h4>Derived type: <code>xmlf_t</code></h4>
+
+<p>This is an opaque type representing the XML file handle. Each function requires this as an argument, so it knows which file to operate on. (And it is an output of the xml_OpenFile subroutine) Since all subroutines require it, it is not mentioned below.</p>
+
+<p><a name="Functions"/></p>
+
+<h2>Function listing</h2>
+
+<p><a name="simple"/></p>
+
+<h3>Frequently used functions</h3>
+
+<ul>
+<li><code>xml_OpenFile</code> <br />
+<strong>filename</strong>: <em>string</em>: Filename to be opened <br />
+<strong>xf</strong>: <em>xmlf_t</em>: XML File handle <br />
+(<strong>preserve_whitespace</strong>): <em>logical</em>: Is whitespace important in the output? (If not, the XML will be pretty-printed.)
+<em>default: false</em> <br />
+(<strong>channel</strong>): <em>integer</em>: What Fortran file handle should the XML file be attached to? 
+<em>default: picked by the library at runtime</em> <br />
+(<strong>replace</strong>): <em>logical</em>: Should the file be replaced if it already exists? 
+<em>default: no, stop at runtime if file already exists</em> <br />
+(<strong>addDecl</strong>): <em>logical</em>: Should an XML declaration be added at the start of the file?
+<em>default: yes</em></li>
+</ul>
+
+<p>Open a file for writing XML</p>
+
+<p>By default, the XML will have no extraneous text nodes. This has the effect of it
+looking slightly ugly, since there will be no newlines inserted between tags.</p>
+
+<p>This behaviour can be changed to produce slightly nicer looking XML, by switching
+on broken_indenting. This will insert newlines and spaces between some tags where
+they are unlikely to carry semantics. Note, though, that this does result in 
+the XML produced being not quite what was asked for, since extra characters and
+text nodes have been inserted.</p>
+
+<p>NB: The <strong>replace</strong> option should be noted. By default, xml_OpenFile will fail with a runtime error if you try and write to an existing file. If you are sure you want to continue on in such a case, then you can specify <code>**replace**=.true.</code> and any existing files will be overwritten. If finer granularity is required over how to proceed in such cases, use the Fortran <code>inquire</code> statement in your code. There is no 'append' functionality by design - any XML file created by appending to an existing file would almost certainly be invalid.</p>
+
+<ul>
+<li><code>xml_Close</code> <br />
+<strong>xf</strong>: <em>xmlf_t</em>: XML File handle</li>
+</ul>
+
+<p>Close an opened XML file, closing all still-opened tags so that it is well-formed.</p>
+
+<ul>
+<li><code>xml_NewElement</code> <br />
+<strong>name</strong>: <em>string</em>:
+Name of tag (for namespaced output, you need to include the prefix)</li>
+</ul>
+
+<p>Open a new element tag</p>
+
+<ul>
+<li><code>xml_EndElement</code> <br />
+<strong>name</strong>: <em>string</em>: 
+Name of tag to be closed (if it doesn't match currently open tag, you'll get an error)</li>
+</ul>
+
+<p>Close an open tag</p>
+
+<ul>
+<li><code>xml_AddAttribute</code> <br />
+<strong>name</strong>: <em>string</em>: Name of attribute <br />
+<strong>value</strong>: <em>anytype</em>: Value of attribute <br />
+(<strong>escape</strong>): <em>logical</em>: if the attribute value is a string, should the attribute value be escaped?
+<em>default: true</em></li>
+</ul>
+
+<p>Add an attribute to the currently open tag.</p>
+
+<p>By default, if the attribute value contains markup characters, they will be escaped automatically by
+wxml before output.</p>
+
+<p>However, in rare cases you may not wish this to happen - if you wish to output Unicode
+characters, or entity references. In this case, you should set <code>escape=.false.</code> for the relevant
+subroutine call. Note that if you do this, no checking on the validity of the output string iis performed; the onus is on you to ensure well-formedness</p>
+
+<p>The value to be added may be of any type; it will be converted to text according to FoX's <a href="str.html">formatting rules</a>,
+and if it is a 1- or 2-dimensional array, the elements will all be output, separated by spaces (except if it is a character array, in which
+case the delimiter may be changed to any other single character using an optional argument).</p>
+
+<ul>
+<li><code>xml_AddCharacters</code> <br />
+<strong>chars</strong> <em>anytype</em>:
+The text to be output <br />
+(<strong>parsed</strong>): <em>logical</em>: Should the output characters be parsed (ie should the library replace '&amp;' with '&amp;' etc?) or unparsed (in which case
+the characters will be surrounded by CDATA tags.
+<em>default: yes</em> <br />
+(<strong>delimiter</strong>): <em>character(1)</em>: If <strong>data</strong> is a character array, what should the delimiter between elements be on output?
+<em>default: a single space</em>  </li>
+</ul>
+
+<p>Add text data. The data to be added may be of any type; they will be converted to text according to FoX's <a href="str.html">formatting rules</a>,
+and if they are a 1- or 2-dimensional array, the elements will all be output, separated by spaces (except if it is a character array, in which
+case the delimiter may be changed to any other single character using an optional argument).</p>
+
+<ul>
+<li><code>xml_AddNewline</code></li>
+</ul>
+
+<p>Within the context of character output, add a (system-dependent) newline character. This function can only
+be called wherever <code>xml_AddCharacters</code> can be called. (Newlines outside of character context are under
+FoX's control, and cannot be manipulated by the user.)</p>
+
+<p><a name="NSfunctions"/></p>
+
+<h3>Namespace-aware functions:</h3>
+
+<ul>
+<li><code>xml_DeclareNamespace</code> <br />
+<strong>nsURI</strong> <em>string</em>: The URI of the namespace <br />
+(<strong>prefix</strong>) <em>string</em>: The namespace prefix to be used in the document. If absent, then the default namespace is affected.</li>
+</ul>
+
+<p>Add an XML Namespace declaration. This function may be called at any time, and its precise effect depends on when it is called; see below</p>
+
+<ul>
+<li><code>xml_UndeclareNamespace</code> <br />
+(<strong>prefix</strong>) <em>string</em>: The namespace prefix to be used in the document. If absent, then the default namespace is affected.</li>
+</ul>
+
+<p>Undeclare an XML namespace. This is equivalent to declaring an namespace with an empty URI, and renders the namespace ineffective for the scope of the declaration. For explanation of its scope, see below.</p>
+
+<p><strong>NB</strong> Use of <code>xml_UndeclareNamespace</code> implies that the resultant document will be compliant with XML Namespaces 1.1, but not 1.0; wxml will issue an error when trying to undeclare namespaces under XML 1.0.</p>
+
+<h4>Scope of namespace functions</h4>
+
+<p>If  <code>xml_[Un]declareNamespace</code> is called immediately prior to an <code>xml_NewElement</code> call, then the namespace will be declared in that next element, and will therefore take effect in all child elements.</p>
+
+<p>If it is called prior to an <code>xml_NewElement</code> call, but that element has namespaced attributes </p>
+
+<p>To explain by means of example: In order to generate the following XML output:</p>
+
+<pre><code> &lt;cml:cml xmlns:cml="http://www.xml-cml.org/schema"/&gt;
+</code></pre>
+
+<p>then the following two calls are necessary, in the prescribed order:</p>
+
+<pre><code>  xml_DeclareNamespace(xf, 'cml', 'http://www.xml-cml.org')
+  xml_NewElement(xf, 'cml:cml')
+</code></pre>
+
+<p>However, to generate XML input like so:
+      <cml xhtml:class="symbol" xmlns:xhtml="http://www.w3.org/1999/xhtml"/>
+that is, where the namespace refers to an attribute at the same level,
+then as long as the <code>xml_AddNamespace</code> call is made before the element tag is closed (either by <code>xml_EndElement</code>, or by a new element tag being opened, or some text being added etc.) the correct XML will be generated.</p>
+
+<p>Two previously mentioned functions are affected when used in a namespace-aware fashion.</p>
+
+<ul>
+<li><code>xml_NewElement</code>, <code>xml_AddAttribute</code></li>
+</ul>
+
+<p>The element or attribute name is checked, and if it is a QName (ie if it is of the form prefix:tagName) then wxml will check that prefix is a
+registered namespace prefix, and generate an error if not.</p>
+
+<p><a name="obscure"/></p>
+
+<h3>More rarely used functions:</h3>
+
+<p>If you don't know the purpose of any of these, then you don't need to. </p>
+
+<ul>
+<li><code>xml_AddXMLDeclaration</code> <br />
+(<strong>version</strong>) <em>string</em>: XML version to be used.
+<em>default: 1.0</em> <br />
+(<strong>encoding</strong>) <em>string</em>: character encoding of the document
+<em>default: absent</em> <br />
+(<strong>standalone</strong>) <em>logical</em>: is this document standalone?
+<em>default: absent</em>  </li>
+</ul>
+
+<p>Add XML declaration to the first line of output. If used, then the file must have been opened with <code>addDecl = .false.</code>, and this must be the first wxml call to the document.o</p>
+
+<p>NB The only XML versions available are 1.0 and 1.1. Attempting to specify anything else will result in an error. Specifying version 1.0 results in additional output checks to ensure the resultant document is XML-1.0-conformant.</p>
+
+<p>NB Note that if the encoding is specified, and is specified to not be UTF-8, then if the specified encoding does not match that supported by the Fortran processor, you may end up with output you do not expect.</p>
+
+<ul>
+<li><code>xml_AddDOCTYPE</code> <br />
+<strong>name</strong> <em>string</em>: DOCTYPE name <br />
+(<strong>system</strong>) <em>string</em>: DOCTYPE SYSTEM ID <br />
+(<strong>public</strong>) <em>string</em>: DOCTYPE PUBLIC ID  </li>
+</ul>
+
+<p>Add an XML document type declaration. If used, this must be used prior to first <code>xml_NewElement</code> call, and only one such call must be made.</p>
+
+<ul>
+<li><code>xml_AddInternalEntity</code> <br />
+<strong>name</strong> <em>string</em>: name of internal entity <br />
+<strong>value</strong> <em>string</em>: value of internal entity  </li>
+</ul>
+
+<p>Define an internal entity for the document. If used, this call must be made after <code>xml_AddDOCTYPE</code> and before the first <code>xml_NewElement</code> call.</p>
+
+<ul>
+<li><code>xml_AddExternalEntity</code> <br />
+<strong>name</strong> <em>string</em>: name of external entity <br />
+<strong>system</strong> <em>string</em>: SYSTEM ID of external entity <br />
+(<strong>public</strong>) <em>string</em>: PUBLIC ID of external entity
+<em>default: absent</em> <br />
+(<strong>notation</strong>) <em>string</em>: notation for external entity
+<em>default: absent</em>  </li>
+</ul>
+
+<p>Define an external entity for the document. If used, this call must be made after <code>xml_AddDOCTYPE</code> and before the first <code>xml_NewElement</code> call.</p>
+
+<ul>
+<li><code>xml_AddParameterEntity</code> <br />
+<strong>name</strong> <em>string</em>: name of parameter entity <br />
+(<strong>PEdef</strong>) <em>string</em>: definition of parameter entity
+<em>default: absent</em> <br />
+(<strong>system</strong>) <em>string</em>: SYSTEM ID of parameter entity
+<em>default: absent</em> <br />
+(<strong>public</strong>) <em>string</em>: PUBLIC ID of parameter entity
+<em>default: absent</em>  </li>
+</ul>
+
+<p>Define a parameter entity for the document. If used, this call must be made after <code>xml_AddDOCTYPE</code> and before the first <code>xml_NewElement</code> call.</p>
+
+<ul>
+<li><code>xml_AddNotation</code> <br />
+<strong>name</strong> <em>string</em>: name of notation <br />
+(<strong>system</strong>) <em>string</em>: SYSTEM ID of notation
+<em>default: absent</em> <br />
+(<strong>public</strong>) <em>string</em>: PUBLIC ID of notation
+<em>default: absent</em>  </li>
+</ul>
+
+<p>Define a notation for the document. If used, this call must be made after <code>xml_AddDOCTYPE</code> and before the first <code>xml_NewElement</code> call.</p>
+
+<ul>
+<li><code>xml_AddElementToDTD</code> <br />
+<strong>name</strong> <em>string</em>: name of element <br />
+<strong>declaration</strong> <em>string</em>: declaration of element  </li>
+</ul>
+
+<p>Add an ELEMENT declaration to the DTD. The syntax of the declaration is not checked in any way, nor does this affect how elements may be added in the content of the XML document.</p>
+
+<p>If used, this call must be made after <code>xml_AddDOCTYPE</code> and before the first <code>xml_NewElement</code> call.</p>
+
+<ul>
+<li><code>xml_AddAttlistToDTD</code> <br />
+<strong>name</strong> <em>string</em>: name of element <br />
+<strong>declaration</strong> <em>string</em>: declaration of element  </li>
+</ul>
+
+<p>Add an ATTLIST declaration to the DTD. The syntax of the declaration is not checked in any way, nor does this affect how attributes may be added in the content of the XML document.</p>
+
+<p>If used, this call must be made after <code>xml_AddDOCTYPE</code> and before the first <code>xml_NewElement</code> call.</p>
+
+<ul>
+<li><code>xml_AddPEreferenceToDTD</code> <br />
+<strong>name</strong> <em>string</em>: name of PEreference</li>
+</ul>
+
+<p>Add a reference to a Parameter Entity in the DTD. No check is made according to whether the PE exists, has been declared, or may legally be used.</p>
+
+<p>If used, this call must be made after <code>xml_AddDOCTYPE</code> and before the first <code>xml_NewElement</code> call.</p>
+
+<ul>
+<li><code>xml_AddXMLStylesheet</code> <br />
+<strong>href</strong> :<em>string</em>: 
+address of stylesheet <br />
+<strong>type</strong>: <em>string</em>:
+type of stylesheet (generally "text/xsl") <br />
+(<strong>title</strong>): <em>string</em>:
+title of stylesheet
+<em>default: none</em> <br />
+(<strong>media</strong>): <em>string:</em>
+output media type
+<em>default: none</em> <br />
+(<strong>charset</strong>): <em>string</em>
+charset of media type
+<em>default:none</em> <br />
+(<strong>alternate</strong>): <em>string</em>:
+alternate
+<em>default:none</em>  </li>
+</ul>
+
+<p>Add XML stylesheet processing instruction, as described in [Stylesheets]. If used, this call must be made before the first <code>xml_NewElement</code> call.</p>
+
+<ul>
+<li><code>xml_AddXMLPI</code> <br />
+<strong>name</strong>: <em>string</em>:
+name of PI <br />
+(<strong>data</strong>): <em>string</em>:
+data for PI 
+(<strong>xml</strong>): <em>string</em>
+<em>default: false</em></li>
+</ul>
+
+<p>Add an XML Processing Instruction.</p>
+
+<p>If data is present, nothing further can be added to the PI. If it is <em>not</em> present, then pseudoattributes may be added using the call below.
+Normally, the <strong>name</strong> is checked to ensure that it is XML-compliant. This requires that PI targets not start with <code>[Xx][Mm][Ll]</code>, because such names are reserved. However, some are defined by later W3 specificataions. If you wish to use such PI targets, then set <code>xml=.true.</code> when outputting them.</p>
+
+<p>The output PI will look like:
+<code>&lt;?name data?&gt;</code></p>
+
+<ul>
+<li><code>xml_AddPseudoAttribute</code> <br />
+<strong>name</strong>: <em>string</em>:
+Name of pseudoattribute <br />
+<strong>value</strong>: <em>anytype</em>:
+Value of pseudoattribute</li>
+</ul>
+
+<p>Add a pseudoattribute to the currently open PI</p>
+
+<ul>
+<li><code>xml_AddComment</code> <br />
+<strong>comment</strong>: <em>string</em>
+Contents of comment</li>
+</ul>
+
+<p>Add an XML comment</p>
+
+<ul>
+<li><code>xml_AddEntityReference</code> <br />
+<strong>entityref</strong>: Entity reference.</li>
+</ul>
+
+<p>This may be used anywhere that <code>xml_AddCharacters</code> may be, and will insert an entity reference into the contents of the XML document at that point. Note that if the entity inserted is a character entity, its validity well be checked according to the rules of XML-1.1, not 1.0.</p>
+
+<p>If the entity reference is not a character entity, then no check is made of its validity, and a warning will be issued</p>
+
+<h3>Functions to query XML file objects</h3>
+
+<p>These functions may be of use in building wrapper libraries:</p>
+
+<ul>
+<li><code>xmlf_Name</code> result(<em>string</em>)</li>
+</ul>
+
+<p>Return the filename of an open XML file</p>
+
+<ul>
+<li><code>xmlf_OpenTag</code> result(<em>string</em>)</li>
+</ul>
+
+<p>Return the currently open tag of the current XML file (or the empty string if none is open)</p>
+
+<h2>Exceptions</h2>
+
+<p><a name="Exceptions"/></p>
+
+<p>Below are explained areas where wxml fails to implement the whole of XML 1.0/1.1; numerical references below are to the sections in [<a href="#XML11">XML11</a>]]. These are divided into two lists: </p>
+
+<p>Ways in which wxml renders it impossible to produce a certain sort of well-formed XML document:</p>
+
+<ol>
+<li>XML documents which are not namespace-valid may not be produced; that is, attempts to produce documents which are well-formed according to [XML11] but not namespace-well-formed according to [Namespaces] will fail. </li>
+<li>Unicode support[[2.2]](http://www.w3.org/TR/xml11/#charsets) is limited. Due to the limitations of Fortran, wxml will directly only emit characters within the range of the local single-byte encoding. wxml will ensure that characters corresponding to those in 7-bit ASCII are output correctly for a UTF-8 encoding. Any other characters are output without any transcoding, and a warning will be issued. Proper output of other unicode characters is possible through the use of character entities, but only where character data is allowed. No means is offered for output of unicode in XML Names. Unicode character references in the range 0-128 are checked before output according to the constraints of <a href="#XML10">[XML10]</a> or <a href="#XML11">[XML11]</a> as appropriate, but characters above 128 are not checked.</li>
+<li>Entity support is not complete[<a href="http://www.w3.org/TR/xml11/#sec-references">4.1</a>, <a href="http://www.w3.org/TR/xml11/#sec-entity-decl">4.2</a>. <a href="http://www.w3.org/TR/xml11/#TextEntities">4.3</a>]. All XML entities (parameter, internal, external) may be defined; however, general entities may only be referenced from within a character data section between tags generated with <code>xml_NewElement</code>, or within an element attribute value. (In principle it should be possible to start the root element from within an entity reference). </li>
+<li>Due to the constraints of the Fortran IO specification, it is impossible to output arbitrary long strings without carriage returns. The size of the limit varies between processors, but may be as low as 1024 characters. To avoid overrunning this limit, wxml will by default insert carriage returns before every new element, and if an unbroken string of attribute or text data is requested greater than 1024 characters, then carriage returns will be inserted as appropriate; within whitespace if possible; to ensure it is broken up into smaller sections to fit within the limits. Thus unwanted text sections are being created, and user output modified. </li>
+</ol>
+
+<p>wxml will try very hard to ensure that output is well-formed. However, it is possible to fool wxml into producing ill-formed XML documents. Avoid doing so if possible; for completeness these ways are listed here. In all cases where ill-formedness is a possibility, a warning will be issued.</p>
+
+<ol>
+<li>If you specify a non-default text encoding, and then run FoX on a platform which does not use this encoding, then the result will be nonsense, and more than likely ill-formed. FoX will issue a warning in this case.</li>
+<li>Although entities may be output, their contents are not comprehensively checked. It is therefore possible to output combinations of entities which produce nonsense when referenced and expanded. FoX will issue a warning when this is possible.</li>
+<li>When entity references are made, a check is performed to ensure that the referenced entity exists - but if not it may be an externally-defined reference, in which case the document may or may not be ill-formed. If so, then a warning will be issued.</li>
+<li>When adding text through xml_AddCharacters, or as the value of an attribute, if any characters are passed in which are not within 7-bit ASCII, then the results are processor-dependent, and may result in an invalid document on output. A warning will be issued if this occurs. If you need a guarantee that such characters will be passed correctly, use character entities.</li>
+<li>In order to add non-ASCII characters to an attribute value via character entity references, the function <code>xml_AddAttribute</code> can be told not to escape its input. In this case, however, no checking at all is performed on the validity of the output string. A warning will be issued if this is done.</li>
+<li>When adding ELEMENT and ATTLIST declarations in the DTD, no checking at all is done on the contents of the declarations passed in, neither at the level of mere syntax, nor at the level of consistency; so that if the declaration is invalid syntactically, the resultant XML document will be ill-formed. A warning will be issued if either function is used.</li>
+</ol>
+
+<p>Finally, it should be noted (although it is obvious from the above) that wxml makes no attempt at all to ensure that output documents are valid XML (by any definition of <em>valid</em>.)</p>
+
+<h2>References</h2>
+
+<p><a name="References"/></p>
+
+<p><a name="XML10"/></p>
+
+<p>[XML10]: W3C Recommendation, <a href="http://www.w3.org/TR/REC-xml/">http://www.w3.org/TR/REC-xml/</a></p>
+
+<p><a name="XML11"/></p>
+
+<p>[XML11]: W3C Recommendation, <a href="http://www.w3.org/TR/xml11">http://www.w3.org/TR/xml11</a></p>
+
+<p><a name="Namespaces"/></p>
+
+<p>[Namespaces]: W3C Recommendation, <a href="http://www.w3.org/TR/xml-names11">http://www.w3.org/TR/xml-names11</a></p>
+
+<p><a name="Stylesheets"/></p>
+
+<p>[Stylesheets]: W3C Recommendation, <a href="http://www.w3.org/TR/xml-stylesheet">http://www.w3.org/TR/xml-stylesheet</a></p>
+</div><hr/><div class="DoX">
+<a name="FoX_wcml"/>
+<h1>WCML</h1>
+
+<p>WCML is a library for outputting <a href="http://www.xml-cml.org">CML</a> data. It wraps all the necessary XML calls, such that you should never need to touch any <a href="#FoX_wxml">WXML</a> calls when outputting CML.</p>
+
+<p>The CML output is conformant to version 2.4 of the CML schema.</p>
+
+<p>The available functions and their intended use are listed below. Quite deliberately, no reference is made to the actual CML output by each function. </p>
+
+<p>Wcml is <em>not</em> intended to be a generalized Fortran CML output layer. rather it is intended to be a library which allows the output of a limited set of well-defined syntactical fragments.</p>
+
+<p>Further information on these fragments, and on the style of CML generated here, is available at <a href="http://www.uszla.me.uk/specs/subset.html">http://www.uszla.me.uk/specs/subset.html</a>.</p>
+
+<p>This section of the manual will detail the available CML output subroutines.</p>
+
+<h2>Use of WCML</h2>
+
+<p>wcml subroutines can be accessed from within a module or subroutine by inserting</p>
+
+<pre><code> use FoX_wcml
+</code></pre>
+
+<p>at the start. This will import all of the subroutines described below, plus the derived type <code>xmlf_t</code> needed to manipulate a CML file.</p>
+
+<p><em>No</em> other entities will be imported; public/private Fortran namespaces are very carefully  controlled within the library.</p>
+
+<h2>Dictionaries.</h2>
+
+<p>The use of dictionaries with WCML is strongly encouraged. (For those not conversant with dictionaries, a fairly detailed explanation is available at <a href="http://www.xml-cml.org/information/dictionaries">http://www.xml-cml.org/information/dictionaries</a>)</p>
+
+<p>In brief, dictionaries are used in two ways.</p>
+
+<h3>Identification</h3>
+
+<p>Firstly, to identify and disambiguate output data. Every output function below takes an optional argument, <code>dictRef=""</code>. It is intended that every piece of data output is tagged with a dictionary reference, which will look something like <code>nameOfCode:nameOfThing</code>. </p>
+
+<p>So, for example, in SIESTA, all the energies are output with different dictRefs, looking like: <code>siesta:KohnShamEnergy</code>, or <code>siesta:kineticEnergy</code>, etc. By doing this, we can ensure that later on all these numbers can be usefully identified.</p>
+
+<p>We hope that ultimately, dictionaries can be written for codes, which will explain what some of these names might mean. However, it is not in any way necessary that this be done - and using <code>dictRef</code> attributes will help merely by giving the ability to disambiguate otherwise indistinguishable quantities.</p>
+
+<p>We strongly recommend this course of action - if you choose to do follow our recommendation, then you should add a suitable Namespace to your code. That is, immediately <em>after</em> <code>cmlBeginFile</code> and <em>before</em> <code>cmlStartCml</code>, you should add something like:</p>
+
+<pre><code>call cmlAddNamespace(xf=xf, 'nameOfCode', 'WebPageOfCode')
+</code></pre>
+
+<p>Again, for SIESTA, we add:</p>
+
+<pre><code>call cmlAddNamespace(xf, 'siesta, 'http://www.uam.es/siesta')
+</code></pre>
+
+<p>If you don't have a webpage for your code, don't worry; the address is only used as an identifier, so anything that looks like a URL, and which nobody else is using, will suffice.</p>
+
+<h3>Quantification</h3>
+
+<p>Secondly, we use dictionaries for units. This is compulsory (unlike <code>dictRef</code>s above). Any numerical quantity that is output through cmlAddProperty or cmlAddParameter is <em>required</em> to carry units. These are added with the <code>units=""</code> argument to the function. In addition, every other function below which will take numerical arguments also will take optional units, although default will be used if no units are supplied.</p>
+
+<p>Further details are supplied in section <a href="#Units">Units</a> below.</p>
+
+<h3>General naming conventions for functions.</h3>
+
+<p>Functions are named in the following way:</p>
+
+<ul>
+<li><p>All functions begin 
+<code>cml</code></p></li>
+<li><p>To begin and end a section of the CML file,
+a pair of functions will exist:</p>
+
+<ul>
+<li><code>cmlStart</code>something</li>
+<li><code>cmlEnd</code>something</li>
+</ul></li>
+<li><p>To output a given quantity/property/concept etc. a function will exist
+<code>cmlAdd</code>something</p></li>
+</ul>
+
+<h3>Conventions used below.</h3>
+
+<ul>
+<li>Function names are in <code>monospace</code></li>
+<li>argument names are in <strong>bold</strong></li>
+<li>optional argument names are in (<strong>parenthesized bold</strong>)</li>
+<li>argument types are in <em>italic</em> and may consist of:</li>
+<li><em>string</em>: string of arbitrary (unless otherwise specified) length</li>
+<li><em>integer</em>: default integer</li>
+<li><em>real(sp)</em>: single precision real number</li>
+<li><em>real(dp)</em>: double precision real number</li>
+<li><em>logical</em>: default logical </li>
+<li><em>real</em>: either of <em>real(sp)</em> or <em>real(dp)</em></li>
+<li><em>anytype</em>: any of <em>logical</em>, <em>integer</em>, <em>real(sp)</em>, <em>real(dp)</em>, <em>string</em></li>
+</ul>
+
+<p>Note that where <em>strings</em> are passed in, they will be passed through entirely unchanged to the output file - no truncation of whitespace will occur.</p>
+
+<p>Also note that wherever a <em>real</em> number can be passed in (including through <em>anytype</em>) then the formatting can be specified using the conventions described in <a href="#StringFormatting">StringFormatting</a></p>
+
+<ul>
+<li><em>scalar</em>: single item</li>
+<li><em>array</em>: one-dimensional array of items</li>
+<li><em>matrix</em>: two-dimensional array of items</li>
+<li><em>anydim</em>: any of <em>scalar</em>, <em>array</em>, <em>matrix</em></li>
+</ul>
+
+<p>Where an <em>array</em> is passed in, it may be passed either as an assumed-shape array; that is, as an F90-style array with no necessity for specifying bounds; thusly:</p>
+
+<pre><code>integer :: array(50)
+call cmlAddProperty(xf, 'coords', array)
+</code></pre>
+
+<p>or as an assumed-size array; that is, an F77-style array, in which case the length must be passed as an additional parameter:</p>
+
+<pre><code>integer :: array(*)
+call cmlAddProperty(xf, 'coords', array, nitems=50)
+</code></pre>
+
+<p>Similarly, when a <em>matrix</em> is passed in, it may be passed in both fashions:</p>
+
+<pre><code>integer :: matrix(50, 50)
+call cmlAddProperty(xf, 'coords', matrix)
+</code></pre>
+
+<p>or </p>
+
+<pre><code>integer :: array(3, *)
+call cmlAddProperty(xf, 'coords', matrix, nrows=3, ncols=50)
+</code></pre>
+
+<p>All functions take as their first argument an XML file object, whose keyword is always <code>xf</code>. This file object is initialized by a <code>cmlBeginFile</code> function.</p>
+
+<p>It is <em>highly</em> recommended that subroutines be called with keywords specified rather than relying on the implicit ordering of arguments. This is robust against changes in the library calling convention; and also stepsides a significant cause of errors when using subroutines with large numbers of arguments.</p>
+
+<p><a name="Units"/></p>
+
+<h3>Units</h3>
+
+<p>Note below that the functions <code>cmlAddParameter</code> and <code>cmlAddProperty</code> both <em>require</em> that units be specified for any numerical quantities output.</p>
+
+<p>If you are trying to output a quantity that is genuinely dimensionless, then you should specify <code>units="units:dimensionless"</code>; or if you are trying to output a countable quantity (eg number of CPUs) then you may specify <code>units="units:countable"</code>.</p>
+
+<p>For other properties, all units should be specified as namespaced quantities. If you are using
+a very few common units, it may be easiest to borrow definitions from the provided dictionaries;</p>
+
+<p>(These links do not resolve yet.)</p>
+
+<p><code>cmlUnits: http://www.xml-cml.org/units/units</code>
+<code>siUnits: &lt;http://www.xml-cml.org/units/siUnits</code>
+<code>atomicUnits: http://www.xml-cml.org/units/atomic</code></p>
+
+<p>A default units dictionary, containing only the very basic units that wcml needs to know about, which has a namespace of: <code>http://www.uszla.me.uk/FoX/units</code>, and wcml assigns it automatically to the prefix <code>units</code>.</p>
+
+<p>This is added <em>automatically</em>, so attempts to add it manually will fail.</p>
+
+<p>The contents of all of these dictionaries, plus the wcml dictionary, may be viewed at:
+<a href="http://www.uszla.me.uk/unitsviz/units.cgi">http://www.uszla.me.uk/unitsviz/units.cgi</a>.</p>
+
+<p>Otherwise, you should feel at liberty to construct your own namespace;
+declare it using <code>cmlAddNamespace</code>, and markup all your units as:</p>
+
+<pre><code> units="myNamespace:myunit"
+</code></pre>
+
+<h2>Functions for manipulating the CML file:</h2>
+
+<ul>
+<li><code>cmlBeginFile</code> <br />
+<strong>filename</strong>: <em>string</em> <em>scalar</em>: Filename to be opened. <br />
+<strong>unit</strong>: <em>integer</em> <em>scalar</em>: what unit number should the file be opened on? If you don't
+care, you may specify '-1' as the unit number, in which case wcml will make a guess
+(<strong>replace</strong>): <em>logical</em> <em>scalar</em>: should the file be replaced if it already exists? <em>default: yes</em></li>
+</ul>
+
+<p>This takes care of all calls to open a CML output file.</p>
+
+<ul>
+<li><code>cmlFinishFile</code></li>
+</ul>
+
+<p>This takes care of all calls to close an open CML output file, once you have finished with it. It is compulsory to call this - if your program finished without calling this, then your CML file will be invalid.</p>
+
+<ul>
+<li><code>cmlAddNamespace</code> <br />
+<strong>prefix</strong> <em>string</em> <em>scalar</em>: prefix to be used <br />
+<strong>nsURI</strong> <em>string</em> <em>scalar</em>: namespace URI to be used  </li>
+</ul>
+
+<p>This adds a namespace to a CML file. <br />
+NB This may only ever be called immediately after a <code>cmlBeginFile</code> call, before any
+output has been performed.
+Attempts to do otherwise will result in a runtime error.</p>
+
+<p>This will be needed if you are adding dictionary references to your output. Thus for siesta, we do:</p>
+
+<pre><code>call cmlAddNamespace(xf, 'siesta', 'http://www.uam.es/siesta')
+</code></pre>
+
+<p>and then output all our properties and parameters with <code>dictRef="siesta:something"</code>.</p>
+
+<ul>
+<li><p><code>cmlStartCml</code> <br />
+(<strong>fileId</strong>) <em>string</em> <em>scalar</em>: name of originating file.  (default: current filename)
+(<strong>version</strong>) <em>string</em> <em>scalar</em>: version of CML in use.  (default: 2.4)</p></li>
+<li><p><code>cmlEndCml</code></p></li>
+</ul>
+
+<p>This pair of functions begin and end the CML output to an existing CML file. It takes care of namespaces.</p>
+
+<p>Note that unless specified otherwise, there will be a <code>convention</code> attribute added to the <code>cml</code> tag specifying <code>FoX_wcml-2.0</code> as the convention. (see <a href="http://www.uszla.me.uk/FoX">http://www.uszla.me.uk/FoX</a> for details)</p>
+
+<h2>Start/End sections</h2>
+
+<ul>
+<li><p><code>cmlStartMetadataList</code> <br />
+(<strong>name</strong>) <em>string</em> <em>scalar</em>: name for the metadata list <br />
+(<strong>role</strong>) <em>string</em> <em>scalar</em> role which the element plays </p></li>
+<li><p><code>cmlEndMetadataList</code></p></li>
+</ul>
+
+<p>This pair of functions open &amp; close a metadataList, which is a wrapper for metadata items.</p>
+
+<ul>
+<li><p><code>cmlStartParameterList</code> <br />
+(<strong>ref</strong>) <em>string</em> <em>scalar</em>: Reference an <code>id</code> attribute of another element (generally deprecated) <br />
+(<strong>role</strong>) <em>string</em> <em>scalar</em> role which the element plays </p></li>
+<li><p><code>cmlEndParameterList</code></p></li>
+</ul>
+
+<p>This pair of functions open &amp; close a parameterList, which is a wrapper for input parameters.</p>
+
+<ul>
+<li><p><code>cmlStartPropertyList</code> <br />
+(<strong>ref</strong>) <em>string</em> <em>scalar</em>: Reference an <code>id</code> attribute of another element (generally deprecated) <br />
+(<strong>role</strong>) <em>string</em> <em>scalar</em> role which the element plays </p></li>
+<li><p><code>cmlEndPropertyList</code></p></li>
+</ul>
+
+<p>This pair of functions open &amp; close a propertyList, which is a wrapper for output properties.</p>
+
+<ul>
+<li><code>cmlStartBandList</code></li>
+<li><code>cmlEndBandList</code></li>
+</ul>
+
+<p>Start/end a list of bands (added using <code>cmlAddBand</code> below)</p>
+
+<ul>
+<li><code>cmlStartKpointList</code></li>
+<li><code>cmlEndKpointList</code></li>
+</ul>
+
+<p>Start/end a list of k-points (added using <code>cmlAddKpoint</code> below)</p>
+
+<ul>
+<li><code>cmlStartModule</code> <br />
+(<strong>serial</strong>) <em>string</em> <em>scalar</em>: serial id for the module <br />
+(<strong>role</strong>) <em>string</em> <em>scalar</em> role which the element plays </li>
+</ul>
+
+<p>Note that in most cases where you might want to use a serial number, you should probably be using the <code>cmlStartStep</code> subroutine below.</p>
+
+<ul>
+<li><code>cmlEndModule</code></li>
+</ul>
+
+<p>This pair of functions open &amp; close a module of a computation which is unordered, or loosely-ordered. For example, METADISE uses one module for each surface examined.</p>
+
+<ul>
+<li><p><code>cmlStartStep</code> <br />
+(<strong>index</strong>) <em>integer</em> <em>scalar</em>: index number for the step. In the absence of an index, steps will be assumed to be consecutively numbered. Specifying this is useful if you wish to output <em>eg</em> every hundredth step. <br />
+(<strong>type</strong>) <em>string</em> <em>scalar</em>: what sort of step is this? This should be a namespaced string, for example: <code>siesta:CG</code> is a Conjugate Gradient step in siesta.</p></li>
+<li><p><code>cmlEndStep</code></p></li>
+</ul>
+
+<p>This pair of functions open and close a module of a computation which is strongly ordered. For example, DLPOLY uses steps for each step of the simulation.</p>
+
+<h2>Adding items.</h2>
+
+<ul>
+<li><code>cmlAddMetadata</code> <br />
+<strong>name</strong>: <em>string</em> <em>scalar</em>: Identifying string for metadata <br />
+<strong>content</strong>: <em>character</em> <em>scalar</em>: Content of metadata  </li>
+</ul>
+
+<p>This adds a single item of metadata. Metadata vocabulary is completely uncontrolled within WCML. This means that metadata values may <em>only</em> be strings of characters. If you need your values to contain numbers, then you need to define the representation yourself, and construct your own strings.</p>
+
+<ul>
+<li><code>cmlAddParameter</code> <br />
+<strong>name</strong>: <em>string</em> <em>scalar</em>: Identifying title for parameter <br />
+<strong>value</strong>:<em>anytype</em> <em>anydim</em>: value of parameter <br />
+<strong>units</strong>: <em>string</em> <em>scalar</em>: units of parameter value  (optional for logical/character <strong>value</strong>s, compulsory otherwise; see note above) <br />
+(<strong>constraint</strong>) <em>string</em> <em>scalar</em>: Constraint under which the parameter is set (this can be an arbitrary string) <br />
+(<strong>ref</strong>) <em>string</em> <em>scalar</em>: Reference an <code>id</code> attribute of another element (generally deprecated) <br />
+(<strong>role</strong>) <em>string</em> <em>scalar</em> role which the element plays </li>
+</ul>
+
+<p>This function adds a tag representing an input parameter</p>
+
+<ul>
+<li><code>cmlAddProperty</code> <br />
+<strong>title</strong>: <em>string</em> <em>scalar</em> <br />
+<strong>value</strong>: <em>any</em> <em>anydim</em> <br />
+<strong>units</strong>: <em>string</em> <em>scalar</em> units of property value  (optional for logical/character <strong>value</strong>s, compulsory otherwise; see note above) <br />
+(<strong>ref</strong>) <em>string</em> <em>scalar</em>: Reference an <code>id</code> attribute of another element (generally deprecated) <br />
+(<strong>role</strong>) <em>string</em> <em>scalar</em> role which the element plays </li>
+</ul>
+
+<p>This function adds a tag representing an output property</p>
+
+<ul>
+<li><code>cmlAddMolecule</code> <br />
+<strong>coords</strong>: <em>real</em>: a 3xn matrix of real numbers representing atomic coordinates (either fractional or Cartesian) . These <em>must</em> be specified in Angstrom or fractional units (see <strong>style</strong> below.) <br />
+<strong>OR</strong> <br />
+<strong>x</strong>, <strong>y</strong>, <strong>z</strong>: <em>real</em>: 3 one-dimensional arrays containing the <em>x</em>, <em>y</em>, and <em>z</em> coordinates of the atoms in the molecule.  These <em>must</em> be specified in Angstrom or fractional units (see <strong>style</strong> below.) <br />
+<strong>elements</strong>: <em>string</em> <em>array</em>: a length-n array of length-2 strings containing IUPAC chemical symbols for the atoms <br />
+(<strong>natoms</strong>) <em>integer</em> <em>scalar</em>: number of atoms in molecule (default: picked up from length of <strong>coords</strong> array) <br />
+(<strong>occupancies</strong>): <em>real</em> <em>array</em> : a length-n array of the occupancies of each atom. <br />
+(<strong>atomRefs</strong>): <em>string</em> <em>array</em>: a length-n array of strings containing references which may point to IDs elsewhere of, for example, pseudopotentials or basis sets defining the element's behaviour. <br />
+(<strong>atomIds</strong>): <em>string</em> <em>array</em>: a length-n array of strings containing IDs for the atoms. <br />
+(<strong>style</strong>): <em>string</em> <em>scalar</em>: <code>cartesian</code> - the coordinates are Cartesian, or <code>fractional</code> - the coordinates are fractional. The default is Cartesian. <br />
+(<strong>ref</strong>) <em>string</em> <em>scalar</em>: Reference an <code>id</code> attribute of another element (generally deprecated) <br />
+(<strong>formula</strong>) <em>string</em> <em>scalar</em>: An IUPAC chemical formula <br />
+(<strong>chirality</strong>) <em>string</em> <em>scalar</em>: The chirality of the molecule. No defined vocabulary. <br />
+(<strong>role</strong>) <em>string</em> <em>scalar</em>: Role of molecule. No defined vocabulary.</li>
+</ul>
+
+<p>Outputs an atomic configuration. </p>
+
+<ul>
+<li><code>cmlAddLattice</code> <br />
+<strong>cell</strong>: <em>real</em> <em>matrix</em> a 3x3 matrix of the unit cell <br />
+(<strong>spaceType</strong>): <em>string</em> <em>scalar</em>: <code>real</code> or <code>reciprocal</code> space. <br />
+(<strong>latticeType</strong>): <em>string</em> <em>scalar</em> Space group of the lattice. No defined vocabulary <br />
+(<strong>units</strong>): <em>string</em> <em>scalar</em> units of (reciprocal) distance that cell vectors is given in;
+<em>default: Angstrom</em></li>
+</ul>
+
+<p>Outputs information about a unit cell, in lattice-vector form</p>
+
+<ul>
+<li><code>cmlAddCrystal</code> <br />
+<strong>a</strong>: <em>real</em> <em>scalar</em> the 'a' parameter (must be in Angstrom) <br />
+<strong>b</strong>: <em>real</em> <em>scalar</em> the 'b' parameter <br />
+<strong>c</strong>: <em>real</em> <em>scalar</em> the 'c' parameter <br />
+<strong>alpha</strong>: <em>real</em> <em>scalar</em> the 'alpha' parameter <br />
+<strong>beta</strong>: <em>real</em> <em>scalar</em> the 'beta' parameter <br />
+<strong>gamma</strong>: <em>real</em> <em>scalar</em> the 'gamma' parameter <br />
+(<strong>z</strong>): <em>integer</em> <em>scalar</em> the 'z' parameter: number of molecules per unit cell. <br />
+(<strong>lenunits</strong>): <em>string</em> <em>scalar</em>: Units of length: default is <code>units:angstrom</code> <br />
+(<strong>angunits</strong>): <em>string</em> <em>scalar</em>: Units of angle: default is <code>units:degrees</code> <br />
+(<strong>lenfmt</strong>): <em>string</em> <em>scalar</em>: format for crystal lengths <br />
+(<strong>angfmt</strong>): <em>string</em> <em>scalar</em>: format for crystal angles <br />
+(<strong>spaceGroup</strong>): <em>string</em> <em>scalar</em> Space group of the crystal. No defined vocabulary.</li>
+</ul>
+
+<p>Outputs information about a unit cell, in crystallographic form</p>
+
+<ul>
+<li><code>cmlAddBand</code> <br />
+<strong>kptref</strong>: <em>string</em> <em>scalar</em>:  Reference id of relevant kpoint. <br />
+<strong>bands</strong>: <em>real</em> <em>array</em>: array of eigenvalues <br />
+<strong>units</strong>: * string* <em>scalar</em>: energy units of eigenvalues <br />
+(<strong>fmt</strong>): <em>string</em> <em>scalar</em>: format to output eigenvalues <br />
+(<strong>label</strong>): <em>string</em> <em>scalar</em>: label for band.</li>
+</ul>
+
+<p>Output eigenvalues for a band.</p>
+
+<ul>
+<li><code>cmlAddKpoint</code> <br />
+<strong>kpoint</strong>: <em>real</em> <em>array</em> length-3 array defining k-point <br />
+(<strong>weight</strong>): <em>real</em> <em>scalar</em>: weight of k-point <br />
+(<strong>kptfmt</strong>): <em>string</em> <em>scalar</em>: format for outputting k-point (default: <code>"r3"</code>) <br />
+(<strong>weightfmt</strong>): <em>string</em> <em>scalar</em>: format for outputting weight (default: <code>"r3"</code>) <br />
+(<strong>label</strong>): <em>string</em> <em>scalar</em>: label for k-point</li>
+</ul>
+
+<p>Output a k-point</p>
+
+<ul>
+<li><code>cmlAddEigen</code> <br />
+<strong>eigvec</strong>: <em>real</em> <em>matrix</em> nxn array of eigenvectors <br />
+<strong>eigval</strong>: <em>real</em> <em>array</em> length-n array of eigenvalues <br />
+(<strong>n</strong>): number of eigenvalues/eigenvectors (default: picked up from length of <strong>eigval</strong>) <br />
+<strong>units</strong>: units of eigenvalues <br />
+<strong>eigenOrientationType</strong>: <em>string</em> <em>scalar</em>: is the eigenvector matrix <code>column</code> or <code>row</code> oriented? <br />
+(<strong>vecfmt</strong>): <em>string</em> <em>scalar</em>: format for outputting eigenvectors <br />
+(<strong>valfmt</strong>): <em>string</em> <em>scalar</em>: format for outputting eigenvalues <br />
+(<strong>type</strong>): <em>string</em> <em>scalar</em>: what sort of thing are these eigenvectors? No defined vocabulary.</li>
+</ul>
+
+<p>Output a set of eigenvalues and eigenvectors</p>
+
+<h2>Common arguments</h2>
+
+<p>All <code>cmlAdd</code> and <code>cmlStart</code> routines take the following set of optional arguments:</p>
+
+<ul>
+<li><code>id</code>: Unique identifying string for element. (Uniqueness is not enforced, though duplicated ids on output are usually an error and may cause later problems)  </li>
+<li><code>title</code>: Human-readable title of element for display purposes  </li>
+<li><code>dictRef</code>: reference to disambiguate element. Should be a QName; a namespaced string. An actual dictionary entry may or may not exist. It is not an error for it not to.  </li>
+<li><code>convention</code>: convention by which the element is to be read. <br />
+(The wording of the definitions for <code>convention</code> is deliberately loose.)</li>
+</ul>
+</div><hr/><div class="DoX">
+<a name="Debugging"/>
+<h1>Debugging with FoX.</h1>
+
+<p>Following experience integrating FoX into several codes, here are a few tips for debugging any problems you may encounter.</p>
+
+<h2>Compilation problems</h2>
+
+<p>You may encounter problems at the compiling or linking stage, with error messages along the lines of:
+     'No Specific Function can be found for this Generic Function'
+(exact phrasing depending on compiler, of course.)</p>
+
+<p>If this is the case, it is possible that you have accidentally got the arguments to the offending out of order. If so, then use the keyword form of the argument to ensure correctness; that is, instead of doing:</p>
+
+<pre><code>call cmlAddProperty(file, name, value)
+</code></pre>
+
+<p>do:</p>
+
+<pre><code>call cmlAddProperty(xf=file, name=name, value=value)
+</code></pre>
+
+<p>This will prevent argument mismatches, and is recommended practise in any case.</p>
+
+<h2>Runtime problems</h2>
+
+<p>You may encounter run-time issues. FoX performs many run-time checks to ensure the validity of the resultant XML code. In so far as it is possible, FoX will either issue warnings about potential problems, or try and safely handle any errors it encounters. In both cases, warning will be output on stderr, which will hopefully help diagnose the problem.</p>
+
+<p>Sometimes, however, FoX will encounter a problem it can do nothing about, and must stop. In all cases, it will try and write out an error message highlighting the reason, and generate a backtrace pointing to the offending line. Occasionally though, the compiler will not generate this information, and the error message will be lost.</p>
+
+<p>If this is the case, you can either investigate the coredump to find the problem, or (if you are on a Mac) look in ~/Library/Logs/CrashReporter to find a human-readable log.</p>
+
+<p>If this is not enlightening, or you cannot find the problem, then some of the most common issues we have encountered are listed below. Many of them are general Fortran problems, but sometimes are not easily spotted in the context of FoX.</p>
+
+<h3>Incorrect formatting.</h3>
+
+<p>Make sure, whenever you are writing out a real number through one of FoX's routines, and specifying a format, that the format is correct according to <a href="#StringFormatting">StringFormatting</a>. Fortran-style formats are <strong>not</strong> permitted, and will cause crashes at runtime.</p>
+
+<h3>Array overruns</h3>
+
+<p>If you are outputting arrays or matrices, and are doing so in the traditional Fortran style - by passing both the array and its length to the routine, like so:</p>
+
+<pre><code> call xml_AddAttribute(xf=file, name=name, value=array, nvalue=n)
+</code></pre>
+
+<p>then if <code>n</code> is wrong, you may end up with an array overrun, and cause a crash.</p>
+
+<p>We highly recommend wherever possible using the Fortran-90 style, like so:</p>
+
+<pre><code> call xml_AddAttribute(xf=file, name=name, value=array)
+</code></pre>
+
+<p>where the array length will be passed automatically.</p>
+
+<h3>Uninitialized variables</h3>
+
+<p>If you are passing variables to FoX which have not been initialized, you may well cause a crash. This is especially true, and easy to cause if you are passing in an array which (due to a bug elsewhere) has been partly but not entirely initialized. To diagnose this, try printing out suspect variables just before passing them to FoX, and look for suspiciously wrong values.</p>
+
+<h3>Invalid floating point numbers.</h3>
+
+<p>If during the course of your calculation you accidentally generate Infinities, or NaNs, then passing them to any Fortran subroutine can result in a crash - therefore trying to pass them to FoX for output may result in a crash.</p>
+
+<p>If you suspect this is happening, try printing out suspect variables before calling FoX. </p>
+</div><hr/><div class="DoX">
+<a name="FoX_sax"/>
+<h1>SAX</h1>
+
+<p>SAX stands for Simple API for XML, and was originally a Java API for reading XML. (Full details at <a href="http://saxproject.org">http://saxproject.org</a>). SAX implementations exist for most common modern computer languages.</p>
+
+<p>FoX includes a SAX implementation, which translates most of the Java API into Fortran, and makes it accessible to Fortran programs, enabling them to read in XML documents in a fashion as close and familiar as possible to other languages.</p>
+
+<p>SAX is a stream-based, event callback API. Conceptually, running a SAX parser over a document results in the parser generating events as it encounters different XML components, and sends the events to the main program, which can read them and take suitable action.</p>
+
+<h3>Events</h3>
+
+<p>Events are generated when the parser encounters, for example, an element opening tag, or some text, and most events carry some data with them - the name of the tag, or the contents of the text.</p>
+
+<p>The full list of events is quite extensive, and may be seen below. For most purposes, though, it is unlikely that most users will need more than the 5 most common events, documented here.</p>
+
+<ul>
+<li>startDocument - generated when the parser starts reading the document. No accompanying data.</li>
+<li>endtDocument - generated when the parser reaches the end of the document. No accompanying data.</li>
+<li>startElement - generated by an element opening tag. Accompanied by tag name, namespace information, and a list of attributes</li>
+<li>endElement - generated by an element closing tag. Accompanied by tag name, and namespace information.</li>
+<li>characters - generated by text between tags. Accompanied by contents of text.</li>
+</ul>
+
+<p>Given these events and accompanying information, a program can extract data from an XML document.</p>
+
+<h3>Invoking the parser.</h3>
+
+<p>Any program using the FoX SAX parser must a) use the FoX module, and b) declare a derived type variable to hold the parser, like so:</p>
+
+<pre><code>   use FoX_sax
+   type(xml_t) :: xp
+</code></pre>
+
+<p>The FoX SAX parser then works by requiring the programmer to write a module containing subroutines to receive any of the events they are interested in, and passing these subroutines to the parser.</p>
+
+<p>Firstly, the parser must be initialized, by passing it XML data. This can be done either by giving a filename, which the parser will manipulate, or by passing a string containing an XML document. Thus:</p>
+
+<pre><code>  call open_xml_file(xp, "input.xml", iostat)
+</code></pre>
+
+<p>The <code>iostat</code> variable will report back any errors in opening the file.</p>
+
+<p>Alternatively, </p>
+
+<pre><code>  call open_xml_string(xp, XMLstring)
+</code></pre>
+
+<p>where <code>XMLstring</code> is a character variable.</p>
+
+<p>To now run the parser over the file, you simply do:</p>
+
+<pre><code> call parse(xp, list_of_event_handlers)
+</code></pre>
+
+<p>And once you're finished, you can close the file, and clean up the parser, with:</p>
+
+<pre><code> call close_xml_t(xp)
+</code></pre>
+
+<h3>Receiving events</h3>
+
+<p>To receive events, you must construct a module containing event handling subroutines. These are subroutines of a prescribed form - the input &amp; output is predetermined by the requirements of the SAX interface, but the body of the subroutine is up to you.</p>
+
+<p>The required forms are shown in the API documentation below, but here are some simple examples.</p>
+
+<p>To receive notification of character events, you must write a subroutine which takes as input one string, which will contain the characters received. So:</p>
+
+<pre><code>module event_handling
+  use FoX_sax
+contains
+
+  subroutine characters_handler(chars)
+    character(len=*), intent(in) :: chars
+
+    print*, chars
+  end subroutine
+end module
+</code></pre>
+
+<p>That does very little - it simply prints out the data it receives. However, since the subroutine is in a module, you can save the data to a module variable, and manipulate it elsewhere; alternatively you can choose to call other subroutines based on the input.</p>
+
+<p>So, a complete program which reads in all the text from an XML document looks like this:</p>
+
+<pre><code>module event_handling
+  use FoX_sax
+contains
+
+  subroutine characters_handler(chars)
+    character(len=*), intent(in) :: chars
+
+    print*, chars
+  end subroutine
+end module
+
+program XMLreader
+  use FoX_sax
+  use event_handling
+  type(xml_t) :: xp
+  call open_xml_file(xp, 'input.xml')
+  call parse(xp, characters_handler=characters_handler)
+  call close_xml_t(xp)
+end program
+</code></pre>
+
+<h3>Attribute dictionaries.</h3>
+
+<p>The other likely most common event is the startElement event. Handling this involves writing a subroutine which takes as input three strings (which are the local name, namespace URI, and fully qualified name of the tag) and a dictionary of attributes. </p>
+
+<p>An attribute dictionary is essentially a set of key:value pairs - where the key is the attributes name, and the value is its value. (When considering namespaces, each attribute also has a URI and localName.)</p>
+
+<p>Full details of all the dictionary-manipulation routines are given in AttributeDictionaries(#AttributeDictionaries), but here we shall show the most common.</p>
+
+<ul>
+<li><p><code>len(dictionary)</code> - returns the number of entries in the dictionary (the number of attributes declared)</p></li>
+<li><p><code>getKey(dictionary, i)</code> (where <code>i</code> is an integer) returns a string containing the key of the <code>i</code>th dictionary entry (ie, the name of the <code>i</code>th attribute.</p></li>
+<li><p><code>getValue(dictionary, i)</code> (where <code>i</code> is an integer) returns a string containing the value of the <code>i</code>th dictionary entry (ie the value of the <code>i</code>th attribute.</p></li>
+<li><p><code>hasKey(dictionary, key)</code> (where <code>key</code> is a string) returns <code>.true.</code> or <code>.false.</code> depending on whether an attribute named <code>key</code> is present.</p></li>
+<li><p><code>hasKey(dictionary, URI, localname)</code> (where <code>URI</code> and <code>localname</code> are strings) returns <code>.true.</code> or <code>.false.</code> depending on whether an attribute with the appropriate <code>URI</code> and <code>localname</code> is present.</p></li>
+<li><p><code>getValue(dictionary, URI, localname)</code> (where <code>URI</code> and <code>localname</code> are strings) returns a string containing the value of the attribute with the appropriate <code>URI</code> and <code>localname</code> (if it is present)</p></li>
+</ul>
+
+<p>So, a simple subroutine to receive a startElement event would look like:</p>
+
+<pre><code>module event_handling
+
+contains
+
+ subroutine startElement_handler(URI, localname, name,attributes)
+   character(len=*), intent(in)   :: URI  
+   character(len=*), intent(in)   :: localname
+   character(len=*), intent(in)   :: name 
+   type(dictionary_t), intent(in) :: attributes
+
+   integer :: i
+
+   print*, name
+
+   do i = 1, len(attributes)
+      print*, getKey(attributes, i), '=', getValue(attributes, i)
+   enddo
+
+  end subroutine startElement_handler
+end module
+
+program XMLreader
+ use FoX_sax
+ use event_handling
+ type(xml_t) :: xp
+ call open_xml_file(xp, 'input.xml')
+ call parse(xp, startElement_handler=startElement_handler)
+ call close_xml_t(xp)
+end program
+</code></pre>
+
+<p>Again, this does nothing but print out the name of the element, and the names and values of all of its attributes. However, by using module variables, or calling other subroutines, the data could be manipulated further.</p>
+
+<h3>Error handling</h3>
+
+<p>The SAX parser detects all XML well-formedness errors. By default, when it encounters an error, it will simply halt the program with a suitable error message. However, it is possible to pass in an error handling subroutine if some other behaviour is desired - for example it may be nice to report the error to the user, and carry on with some other task.</p>
+
+<p>In any case, once an error is encountered, the parser will finish. There is no way to continue reading past an error.</p>
+
+<p>An error handling suubroutine works in the same way as any other event handler, with the event data being an error message. Thus, you could write:</p>
+
+<pre><code>subroutine error_handler(msg)
+  character(len=*), intent(in) :: msg
+
+  print*, "The SAX parser encountered an error:"
+  print*, msg
+  print*, "Never mind, carrying on with the rest of the calcaulation."
+end subroutine
+</code></pre>
+
+<hr />
+
+<h2>Full API</h2>
+
+<h3>Derived types</h3>
+
+<p>There is one derived type, <code>xml_t</code>. This is entirely opaque, and is used as a handle for the parser.</p>
+
+<h3>Subroutines</h3>
+
+<p>There are four subroutines:</p>
+
+<ul>
+<li><code>open_xml_file <br />
+type(xml_t), intent(inout) :: xp <br />
+character(len=*), intent(in) :: string <br />
+integer, intent(out), optional :: iostat</code></li>
+</ul>
+
+<p>This opens a file. <code>xp</code> is initialized, and prepared for parsing. <code>string</code> must contain the name of the file to be opened. <code>iostat</code> reports on the success of opening the file. A value of <code>0</code> indicates success.</p>
+
+<ul>
+<li><p><code>open_xml_string <br />
+type(xml_t), intent(inout) :: xpi <br />
+character(len=*), intent(in) :: string</code></p>
+
+<p>This prepares to parse a string containing XML data. <code>xp</code> is initialized. <code>string</code> must contain the XML data.</p></li>
+<li><p><code>close_xml_t <br />
+type(xml_t), intent(inout) :: xp</code></p></li>
+</ul>
+
+<p>This closes down the parser (and closes the file, if input was coming from a file.) <code>xp</code> is left uninitialized, ready to be used again if necessary.</p>
+
+<ul>
+<li><p><code>parse <br />
+type(xml_t), intent(inout) :: xp <br />
+external :: list of event handlers <br />
+logical, optional, intent(in) :: validate</code></p>
+
+<p>This tells <code>xp</code> to start parsing its document. </p></li>
+</ul>
+
+<p>(<em>Advanced: By default, this will be done in a non-validating way, testing only for well-formedness errors. However, if <code>validate</code> is set to true. FoX will attempt to diagnose validation errors. Note that FoX is not a full validating parser, and will not read external entities, so do not rely on this behaviour</em>)</p>
+
+<p>The full list of event handlers is in the next section. To use them, the interface must be placed in a module, and the body of the subroutine filled in as desired; then it should be specified as an argument to <code>parse</code> as: <br />
+  <code>name_of_event_handler = name_of_user_written_subroutine</code> <br />
+Thus a typical call to <code>parse</code> might look something like:</p>
+
+<pre><code>  call parse(xp, startElement_handler = mystartelement, endElement_handler = myendelement, characters_handler = mychars)
+</code></pre>
+
+<p>where <code>mystartelement</code>, <code>myendelement</code>, and <code>mychars</code> are all  subroutines written by you according to the interfaces listed below.</p>
+
+<hr />
+
+<h2>Callbacks.</h2>
+
+<p>All of the callbacks specified by SAX 2 are implemented. Documentation of the SAX 2 interfaces is available in the JavaDoc at <a href="http://sax_project.org">http://saxproject.org</a>, but as the interfaces needed adjustment for Fortran, they are listed here.</p>
+
+<p>For documentation on the meaning of the callbacks and of their arguments, please refer to the Java SAX documentation.</p>
+
+<ul>
+<li><code>characters_handler <br />
+  subroutine characters_handler(chunk) <br />
+    character(len=*), intent(in) :: chunk <br />
+  end subroutine characters_handler</code></li>
+</ul>
+
+<p>Triggered when some character data is read from between tags. </p>
+
+<p>NB Note that <em>all</em> character data is reported, including whitespace. Thus you will probably get a lot of empty <code>characters</code> events in a typical XML document.</p>
+
+<p>NB Note also that it is not required that large chunks of character data all come as one event - they may come as multiple consecutive events.</p>
+
+<ul>
+<li><code>endDocument_handler <br />
+  subroutine endDocument_handler() <br />
+  end subroutine endDocument_handler</code></li>
+</ul>
+
+<p>Triggered when the parser reaches the end of the document.</p>
+
+<ul>
+<li><code>endElement_handler <br />
+  subroutine endElement_handler(namespaceURI, localName, name) <br />
+    character(len=*), intent(in)     :: namespaceURI <br />
+    character(len=*), intent(in)     :: localName <br />
+    character(len=*), intent(in)     :: name <br />
+  end subroutine endElement_handler</code></li>
+</ul>
+
+<p>Triggered by a closing tag.</p>
+
+<ul>
+<li><code>endPrefixMapping_handler <br />
+  subroutine endPrefixMapping_handler(prefix) <br />
+    character(len=*), intent(in) :: prefix <br />
+  end subroutine endPrefixMapping_handler</code></li>
+</ul>
+
+<p>Triggered when a namespace prefix mapping goes out of scope.</p>
+
+<ul>
+<li><code>ignorableWhitespace <br />
+  subroutine ignorableWhitespace_handler(chars) <br />
+    character(len=*), intent(in) :: chars <br />
+  end subroutine ignorableWhitespace_handler</code></li>
+</ul>
+
+<p>Triggered when whitespace is encountered within an element declared as <code>EMPTY</code>. (Only active in validating mode.)</p>
+
+<ul>
+<li><code>processingInstruction_handler <br />
+  subroutine processingInstruction_handler(name, content) <br />
+    character(len=*), intent(in)     :: name <br />
+    character(len=*), intent(in)     :: content <br />
+  end subroutine processingInstruction_handler</code></li>
+</ul>
+
+<p>Triggered by a Processing Instruction</p>
+
+<ul>
+<li><code>skippedEntity_handler <br />
+  subroutine skippedEntity_handler(name) <br />
+    character(len=*), intent(in) :: name <br />
+  end subroutine skippedEntity_handler</code></li>
+</ul>
+
+<p>Triggered when either an external entity, or an undeclared entity, is skipped.</p>
+
+<ul>
+<li><code>startDocument_handler <br />
+  subroutine startDocument_handler() <br />
+  end subroutine startDocument_handler</code></li>
+</ul>
+
+<p>Triggered when the parser starts reading the document.</p>
+
+<ul>
+<li><code>startElement_handler <br />
+  subroutine startElement_handler(namespaceURI, localName, name, attributes) <br />
+    character(len=*), intent(in)     :: namespaceUri <br />
+    character(len=*), intent(in)     :: localName <br />
+    character(len=*), intent(in)     :: name <br />
+    type(dictionary_t), intent(in)   :: attributes <br />
+  end subroutine startElement_handler</code></li>
+</ul>
+
+<p>Triggered when an opening tag is encountered. (see LINK for documentation on handling attribute dictionaries.</p>
+
+<ul>
+<li><code>startPrefixMapping_handler <br />
+  subroutine startPrefixMapping_handler(namespaceURI, prefix) <br />
+    character(len=*), intent(in) :: namespaceURI <br />
+    character(len=*), intent(in) :: prefix <br />
+  end subroutine startPrefixMapping_handler</code></li>
+</ul>
+
+<p>Triggered when a namespace prefix mapping start.</p>
+
+<ul>
+<li><code>notationDecl_handler <br />
+  subroutine notationDecl_handler(name, publicId, systemId) <br />
+    character(len=*), intent(in) :: name <br />
+    character(len=*), optional, intent(in) :: publicId <br />
+    character(len=*), optional, intent(in) :: systemId <br />
+  end subroutine notationDecl_handler</code></li>
+</ul>
+
+<p>Triggered when a NOTATION declaration is made in the DTD</p>
+
+<ul>
+<li><code>unparsedEntityDecl_handler <br />
+  subroutine unparsedEntityDecl_handler(name, publicId, systemId, notation) <br />
+    character(len=*), intent(in) :: name <br />
+    character(len=*), optional, intent(in) :: publicId <br />
+    character(len=*), intent(in) :: systemId <br />
+    character(len=*), intent(in) :: notation <br />
+  end subroutine unparsedEntityDecl_handler</code></li>
+</ul>
+
+<p>Triggered when an unparsed entity is declared</p>
+
+<ul>
+<li><code>error_handler <br />
+  subroutine error_handler(msg) <br />
+    character(len=*), intent(in)     :: msg <br />
+  end subroutine error_handler</code></li>
+</ul>
+
+<p>Triggered when a normal parsing error is encountered. Parsing will cease after this event.</p>
+
+<ul>
+<li><code>fatalError_handler <br />
+  subroutine fatalError_handler(msg) <br />
+    character(len=*), intent(in)     :: msg <br />
+  end subroutine fatalError_handler</code></li>
+</ul>
+
+<p>Triggered when a fatal parsing error is encountered. Parsing will cease after this event.</p>
+
+<ul>
+<li><code>warning_handler <br />
+  subroutine warning_handler(msg) <br />
+    character(len=*), intent(in)     :: msg <br />
+  end subroutine warning_handler</code></li>
+</ul>
+
+<p>Triggered when a parser warning is generated. Parsing will continue after this event.</p>
+
+<ul>
+<li><code>attributeDecl_handler <br />
+  subroutine attributeDecl_handler(eName, aName, type, mode, value) <br />
+    character(len=*), intent(in) :: eName <br />
+    character(len=*), intent(in) :: aName <br />
+    character(len=*), intent(in) :: type <br />
+    character(len=*), intent(in), optional :: mode <br />
+    character(len=*), intent(in), optional :: value <br />
+  end subroutine attributeDecl_handler</code></li>
+</ul>
+
+<p>Triggered when an attribute declaration is encountered in the DTD.</p>
+
+<ul>
+<li><code>elementDecl_handler <br />
+  subroutine elementDecl_handler(name, model) <br />
+    character(len=*), intent(in) :: name <br />
+    character(len=*), intent(in) :: model <br />
+  end subroutine elementDecl_handler</code></li>
+</ul>
+
+<p>Triggered when an element declaration is enountered in the DTD.</p>
+
+<ul>
+<li><code>externalEntityDecl_handler <br />
+  subroutine externalEntityDecl_handler(name, publicId, systemId) <br />
+    character(len=*), intent(in) :: name <br />
+    character(len=*), optional, intent(in) :: publicId <br />
+    character(len=*), intent(in) :: systemId <br />
+  end subroutine externalEntityDecl_handler</code></li>
+</ul>
+
+<p>Triggered when a parsed external entity is declared in the DTD.</p>
+
+<ul>
+<li><code>internalEntityDecl_handler <br />
+  subroutine internalEntityDecl_handler(name, value) <br />
+    character(len=*), intent(in) :: name <br />
+    character(len=*), intent(in) :: value <br />
+  end subroutine internalEntityDecl_handler</code></li>
+</ul>
+
+<p>Triggered when an internal entity is declared in the DTD.</p>
+
+<ul>
+<li><code>comment_handler <br />
+  subroutine comment_handler(comment) <br />
+    character(len=*), intent(in) :: comment <br />
+  end subroutine comment_handler</code></li>
+</ul>
+
+<p>Triggered when a comment is encountered.</p>
+
+<ul>
+<li><code>endCdata_handler <br />
+  subroutine endCdata_handler() <br />
+  end subroutine endCdata_handler</code></li>
+</ul>
+
+<p>Triggered by the end of a CData section.</p>
+
+<ul>
+<li><code>endDTD_handler <br />
+  subroutine endDTD_handler() <br />
+  end subroutine endDTD_handler</code></li>
+</ul>
+
+<p>Triggered by the end of a DTD.</p>
+
+<ul>
+<li><code>endEntity_handler <br />
+  subroutine endEntity_handler(name) <br />
+    character(len=*), intent(in) :: name <br />
+  end subroutine endEntity_handler</code></li>
+</ul>
+
+<p>Triggered at the end of entity expansion.</p>
+
+<ul>
+<li><code>startCdata_handler <br />
+  subroutine startCdata_handler() <br />
+  end subroutine startCdata_handler</code></li>
+</ul>
+
+<p>Triggered by the start of a CData section.</p>
+
+<ul>
+<li><code>startDTD_handler <br />
+  subroutine startDTD_handler(name, publicId, systemId) <br />
+    character(len=*), intent(in) :: name <br />
+    character(len=*), optional, intent(in) :: publicId <br />
+    character(len=*), optional, intent(in) :: systemId <br />
+  end subroutine startDTD_handler</code></li>
+</ul>
+
+<p>Triggered by the start of a DTD section.</p>
+
+<ul>
+<li><code>startEntity_handler <br />
+  subroutine startEntity_handler(name) <br />
+    character(len=*), intent(in) :: name <br />
+  end subroutine startEntity_handler</code></li>
+</ul>
+
+<p>Triggered by the start of entity expansion.</p>
+
+<hr />
+
+<h3>Exceptions.</h3>
+
+<p>Although FoX tries very hard to  work to the letter of the XML and SAX standards, it falls short in a few areas.</p>
+
+<ul>
+<li>Unicode support is completely absent. It is unfortunately impossible to implement Unicode reading in standard Fortran 95. FoX will work perfectly well on documents of any encoding that only contain characters equivalent to those in US-ASCII, but its behaviour on documents containing other characters is not well-defined.</li>
+</ul>
+
+<p>(This includes non-ASCII characters present only by character reference.)</p>
+
+<p>It will, however, happily accept documents labelled as UTF-8 encoded.</p>
+
+<ul>
+<li><p>XML specifies that all SYSTEM IDs reported by events should be converted to URIs before the application receives them. FoX does no such conversion, and as a result, will allow through invalid SYSTEM IDs.</p></li>
+<li><p>FoX performs no checking on the validity of Namespace URIs.</p></li>
+</ul>
+
+<p>Beyond this, any aspects of XML and SAX which FoX fails to do justice to are bugs.</p>
+
+<p>Note that (as permissable within XML) FoX acts primarily as a non-validating parser, and thus all constraints marked as Validity Constraints by XML-1.0/1.1 are ignored by default. A subset of them will be picked up by FoX's validation mode, but only a small subset.</p>
+
+<p>Note also that FoX will not read external entities when processing an XML document.</p>
+
+<hr />
+
+<h3>What of Java SAX 2 is not included in FoX?</h3>
+
+<p>The difference betweek Java &amp; Fortran means that none of the SAX APIs can be copied directly. However, FoX offers data types, subroutines, and interfaces covering a large proportion of the facilities offered by SAX. Where it does not, this is mentioned here.</p>
+
+<p>org.sax.xml:</p>
+
+<ul>
+<li>Querying/setting of feature flags/property values for the XML parser.  </li>
+<li>XML filters - Java SAX makes it possible to write filters to intercept the
+flow of events. FoX does not support this.  </li>
+<li>Namespace configuration - SAX 2 allows changing the ways in which namespaces are interpreted <br />
+by the parser. FoX supports only the SAX 2 default.</li>
+<li>Entity resolution - SAX 2 exports an interface to the application for entity resolution, but <br />
+FOX does not - all entities are resolved within the parser.</li>
+<li>Locator - SAX 2 offers an interface to export information regarding object locations within the document, FoX does not.  </li>
+<li>XMLReader - FoX only offers the parse() method - no other methods really make sense in Fortran.  </li>
+<li>AttributeList/DocumentHandler/Parser - FoX only offers namespace aware attributes, not the pre-namespace versions.  </li>
+</ul>
+
+<p>org.sax.xml.ext:</p>
+
+<ul>
+<li>Attributes2 - FoX does not implement these attribute-declaration querying functions   </li>
+<li>EntityResolver2 - see above   </li>
+<li>Locator2 - not implemented  </li>
+</ul>
+
+<p>org.sax.xml.helpers:</p>
+
+<ul>
+<li>None of these helper methods are implemented.</li>
+</ul>
+</div><hr/><div class="DoX">
+<a name="AttributeDictionaries"/>
+<h1>Attributes dictionaries.</h1>
+
+<p>When parsing XML using the FoX SAX module, attributes are returned contained within a dictionary object.</p>
+
+<p>All of the attribute dictionary objects and functions are exported through FoX<em>common and FoX</em>sax - you must USE the module to enable them. The dictionary API is described here.</p>
+
+<p>An attribute dictionary consists of a list of entries, one for each attribute. The entries all have the following pieces of data:</p>
+
+<ul>
+<li>key - the attribute's full name  </li>
+<li>value - the attribute's value</li>
+</ul>
+
+<p>and for namespaced attributes:</p>
+
+<ul>
+<li>nsURI - the namespace URI (if any) of the attribute</li>
+<li>localname - the local name of the attribute</li>
+</ul>
+
+<hr />
+
+<h2>Derived types</h2>
+
+<p>There is one derived type of interest, <code>dictionary_t</code>.</p>
+
+<p>It is opaque - that is, it should only be manipulated through the functions described here.</p>
+
+<h2>Functions</h2>
+
+<ul>
+<li><code>len <br />
+type(dictionary_t), intent(in) :: dict</code></li>
+</ul>
+
+<p>Returns an integer with the length of the dictionary, ie the number of dictionary entries.</p>
+
+<ul>
+<li><code>getLength <br />
+type(dictionary_t), intent(in) :: dict</code></li>
+</ul>
+
+<p>Returns an integer with the length of the dictionary, ie the number of dictionary entries. Identical to the <code>len</code> function.</p>
+
+<ul>
+<li><code>hasKey <br />
+type(dictionary_t), intent(in) :: dict <br />
+character(len=*), intent(in) :: key</code></li>
+</ul>
+
+<p>Returns a logical value according to whether the dictionary contains an attribute named <code>key</code> or not.</p>
+
+<ul>
+<li><code>hasKey <br />
+type(dictionary_t), intent(in) :: dict <br />
+character(len=*), intent(in) :: uri <br />
+character(len=*), intent(in) :: localname</code></li>
+</ul>
+
+<p>Returns a logical value according to whether the dictionary contains an attribute with the correct <code>URI</code> and <code>localname</code>.</p>
+
+<p>The following functions may be used to retrieve data from a dictionary</p>
+
+<ul>
+<li><code>getQName <br />
+type(dictionary_t), intent(in) :: dict <br />
+integer, intent(in) :: i</code></li>
+</ul>
+
+<p>Return the full name of the <code>i</code>th dictionary entry.</p>
+
+<ul>
+<li><code>getValue <br />
+type(dictionary_t), intent(in) <br />
+integer, intent(in) :: i</code></li>
+</ul>
+
+<p>If an integer is passed in - the value of the <code>i</code>th attribute. </p>
+
+<ul>
+<li><code>getValue <br />
+type(dictionary_t), intent(in) <br />
+character(len=*), intent(in) :: key</code></li>
+</ul>
+
+<p>If a single string is passed in, the value of the attribute with that name.</p>
+
+<ul>
+<li><code>getValue <br />
+type(dictionary_t), intent(in) <br />
+character(len=*), intent(in) :: uri, localname</code></li>
+</ul>
+
+<p>If two strings are passed in, the value of the attribute with that uri and localname.</p>
+
+<ul>
+<li><code>getURI <br />
+type(dictionary_t), intent(in) <br />
+integer, intent(in), optional :: i</code></li>
+</ul>
+
+<p>Returns a string containing the nsURI of the <code>i</code>th attribute.</p>
+
+<ul>
+<li><code>getlocalName <br />
+type(dictionary_t), intent(in) <br />
+integer, intent(in), optional :: i</code></li>
+</ul>
+
+<p>Returns a string containing the localName of the <code>i</code>th attribute.</p>
+</div><hr/><div class="DoX">
+<a name="Information"/>
+<h1>Further information</h1>
+
+<p>FoX evolved from the initial codebase of <a href="http://lcdx00.wm.lc.ehu.es/ag/xml/">xmlf90</a>,
+which was written largely by Alberto Garcia &lt;<a href="&#x6D;&#97;&#x69;&#x6C;&#x74;o:&#97;&#108;&#x62;&#101;&#114;&#x74;&#x6F;&#103;&#64;&#105;&#x63;&#x6D;&#97;&#x62;&#x2E;&#x65;&#x73;">&#97;&#108;&#x62;&#101;&#114;&#x74;&#x6F;&#103;&#64;&#105;&#x63;&#x6D;&#97;&#x62;&#x2E;&#x65;&#x73;</a>> and Jon Wakelin &lt;<a href="&#109;a&#x69;&#x6C;&#116;&#111;:&#106;&#111;&#x6E;&#x2E;&#x77;&#97;&#107;&#101;&#108;&#x69;&#x6E;&#64;&#x62;&#114;i&#x73;&#116;&#x6F;&#108;&#x2E;&#97;&#99;&#x2E;&#x75;&#x6B;">&#106;&#111;&#x6E;&#x2E;&#x77;&#97;&#107;&#101;&#108;&#x69;&#x6E;&#64;&#x62;&#114;i&#x73;&#116;&#x6F;&#108;&#x2E;&#97;&#99;&#x2E;&#x75;&#x6B;</a>>.</p>
+
+<p>FoX is the work of Toby White &lt;<a href="&#x6D;a&#105;&#x6C;&#x74;&#111;:&#116;&#111;&#119;&#x32;1&#64;&#99;&#97;&#x6D;&#x2E;&#97;c&#46;&#x75;&#x6B;">&#116;&#111;&#119;&#x32;1&#64;&#99;&#97;&#x6D;&#x2E;&#97;c&#46;&#x75;&#x6B;</a>>, and all bug reports/complaints/bouquets of roses should be sent to him.</p>
+
+<p>There is a FoX website at <a href="http://www.uszla.me.uk/software/FoX/">http://www.uszla.me.uk/software/FoX/</a>.</p>
+
+<p>There is also a mailing list for announcements/queries/bug reports. Information on how to subscribe may be found at <a href="http://www.uszla.me.uk/cgi-bin/mailman/listinfo/FoX/">http://www.uszla.me.uk/cgi-bin/mailman/listinfo/FoX/</a>,</p>
+
+<p>This manual is &copy; Toby White 2006.</p>
+</div><hr/><div class="DoX">
+<a name="Licensing"/>
+<h1>Licensing</h1>
+
+<p>FoX is licensed under the agreement below. This is intended to make it as freely available as possible, subject only to retaining copyright notices and acknowledgements.</p>
+
+<p>If for any reason this license causes issues with your intended use of the code, please contect the author.</p>
+
+<p>The license can also be found within the distributed source, in the file FoX/LICENSE</p>
+
+<p>Copyright: <br />
+&copy; 2003, 2004, Alberto Garcia, Jon Wakelin <br />
+&copy; 2005, 2006, 2007, Toby White <br />
+All rights reserved.</p>
+
+<p>Redistribution and use in source and binary forms, with or without 
+modification, are permitted provided that the following conditions are
+met:</p>
+
+<ul>
+<li><p>Redistributions of source code must retain the above copyright notice, 
+this list of conditions and the following disclaimer.</p></li>
+<li><p>Redistributions in binary form must reproduce the above copyright
+notice, this list of conditions and the following disclaimer in the
+documentation and/or other materials provided with the distribution.</p></li>
+<li><p>Neither the name of the copyright holder nor the names of its
+contributors may be used to endorse or promote products derived from
+this software without specific prior written permission.</p></li>
+</ul>
+
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE </p>
+</div><hr/><div class="DoX">
+</div>
+</body>
+</html>

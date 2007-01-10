@@ -1,0 +1,11 @@
+program short_test
+
+  use m_common_format, only : str
+
+  write(*,'(3a)') '!',str(&
+TESTINPUT&
+),'!'
+
+end program short_test
+
+  
