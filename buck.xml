@@ -1,4 +1,7 @@
 <cml xmlns="http://www.xml-cml.org/schema" xmlns:m="http://www.w3.org/1998/Math/MathML">
+<!-- A hand constructed CML encoded buckingham potential 
+     based on Gulp's current (i.e. new) output with changes 
+     to enable usefull applications to be constructed     -->
   <potentialList>
     <potential id="1" dictRef="gulp:potential">
       <metadataList>
@@ -19,7 +22,7 @@
             <m:ci>
               <m:apply>
                 <m:times/>
-                <m:ci>Aij</m:ci>
+                <m:ci>a</m:ci>
                 <m:ci>
                   <m:apply>
                     <m:exp/>
@@ -29,7 +32,7 @@
                         <m:ci>
                           <m:divide/>
                           <m:ci>R</m:ci>
-                          <m:ci>Roh</m:ci>
+                          <m:ci>roh</m:ci>
                         </m:ci>
                       </m:apply>
                     </m:ci>
@@ -40,7 +43,7 @@
             <m:ci>
               <m:apply>
                 <m:divide/>
-                <m:ci>Cij</m:ci>
+                <m:ci>c</m:ci>
                 <m:ci>
                   <m:apply>
                     <m:power/>
@@ -52,14 +55,45 @@
             </m:ci>
           </m:apply>
         </m:math>
-        <arg ref="buckingham.a">
+<!-- Parameters for the potential
+
+The plan appears to have been to include these in <arg> elements but 
+I'm key to reserve this for the arguments of the fuction that are used
+as such in the calculation. In this case the argument is a distance measured
+in Angstroms. Parameter appears to fit the bill:
+
+"A parameter describing the computation. 
+
+"A parameter is a broad concept and can describe numeric quantities, objects, 
+keywords, etc. The distinction between keywords and parameters is often fuzzy. 
+("MINIM" might mean "minimize", while "MINIM=3" might require three iterations to 
+be run. It may help to think of control keywords as boolean parameters. 
+
+"Numeric parameters can describe values in molecules, forcefields or other objects. 
+Often the parameters will be refined or otherwise varied during the calculation. Some 
+parameters may be fixed at particulat values or relaxed at different stages in the 
+calculation. Parameterscanhaveerrors,gradientsandotherindicationsofuncertainty." 
+
+To be usefull parameters should have an attribute "name" that is the name of the 
+parameter used for printing AND as a ci in the mathML encoding of the functional 
+form of the expression. A dictRef is recommended to tie the parameter into a 
+(code specific) dictionary. The value of the parameter should be given units to 
+enable automatic checking of the expression and conversion of potentials between 
+codes 
+-->
+        <parameter name="a" dictRef="gulp:buckingham.a">
           <scalar units="gulpunits:eV">2.409505000000e3</scalar>
-        </arg>
-        <arg ref="buckingham.roh">
+        </parameter>
+        <parameter name="roh" dictRef="gulp:buckingham.roh">
           <scalar units="gulpunits:Ang^-1">2.649000000000e-1</scalar>
-        </arg>
-        <arg ref="buckingham.c">
+        </parameter>
+        <parameter name="c" dictRef="gulp:buckingham.c">
           <scalar units="gulpunits:eV^-6">0.000000000000e0</scalar>
+        </parameter>
+<!-- Arguments (indepedant variables) of the potential are encoded as <arg>s
+with a name (corresponding to the ci) dictRef and units  -->
+        <arg name="r" dictRef="gulp:buckingham.R">
+<!-- UNITS (Angstroms as it happens) but no vaue! -->
         </arg>
       </expression>
     </potential>
