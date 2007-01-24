@@ -4,8 +4,8 @@ program readpots
 
  implicit none 
 
- print*, 'about to open small1.xml'
- call cml_read_pots('small1.xml')
+ print*, 'about to open buck.xml'
+ call cml_read_pots('buck.xml')
  print*, "All done in test"
 
 end program readpots

@@ -18,6 +18,14 @@ module cml_read_pot
 
  type(xml_t), save :: xp
 
+ type two_body_pot
+     character :: name
+     character :: atom_1
+     character :: atom_2
+     real, dimension(4) :: parameters
+ end type two_body_pot
+
+
 contains
 
  subroutine cml_read_pots(filename)

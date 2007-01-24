@@ -1,0 +1,67 @@
+<cml xmlns="http://www.xml-cml.org/schema" xmlns:m="http://www.w3.org/1998/Math/MathML">
+  <potentialList>
+    <potential id="1" dictRef="gulp:potential">
+      <metadataList>
+        <metadata name="gulp:potentaltype" content="Buckingham"/>
+        <metadata name="gulp:buckinghamatom" content="O"/>
+        <metadata name="gulp:buckinghamatom" content="Al"/>
+        <metadata name="gulp:buckinghamatomtype" content="s"/>
+        <metadata name="gulp:buckinghamatomtype" content="s"/>
+        <metadata name="gulp:buckinghamecuttmax" content="1.000000000000e1"/>
+        <metadata name="gulp:buckinghamecuttmin" content="0.000000000000e0"/>
+        <metadata name="gulp:potentialtype"
+        content="General interatomic potential"/>
+      </metadataList>
+      <expression>
+        <m:math>
+          <m:apply>
+            <m:minus/>
+            <m:ci>
+              <m:apply>
+                <m:times/>
+                <m:ci>Aij</m:ci>
+                <m:ci>
+                  <m:apply>
+                    <m:exp/>
+                    <m:ci>
+                      <m:apply>
+                        <m:minus/>
+                        <m:ci>
+                          <m:divide/>
+                          <m:ci>R</m:ci>
+                          <m:ci>Roh</m:ci>
+                        </m:ci>
+                      </m:apply>
+                    </m:ci>
+                  </m:apply>
+                </m:ci>
+              </m:apply>
+            </m:ci>
+            <m:ci>
+              <m:apply>
+                <m:divide/>
+                <m:ci>Cij</m:ci>
+                <m:ci>
+                  <m:apply>
+                    <m:power/>
+                    <m:ci>R</m:ci>
+                    <m:cn>6</m:cn>
+                  </m:apply>
+                </m:ci>
+              </m:apply>
+            </m:ci>
+          </m:apply>
+        </m:math>
+        <arg ref="buckingham.a">
+          <scalar units="gulpunits:eV">2.409505000000e3</scalar>
+        </arg>
+        <arg ref="buckingham.roh">
+          <scalar units="gulpunits:Ang^-1">2.649000000000e-1</scalar>
+        </arg>
+        <arg ref="buckingham.c">
+          <scalar units="gulpunits:eV^-6">0.000000000000e0</scalar>
+        </arg>
+      </expression>
+    </potential>
+  </potentialList>
+</cml>
