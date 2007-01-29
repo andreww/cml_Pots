@@ -3,19 +3,136 @@ import lxml.etree
 namespaces = {'c':'http://www.xml-cml.org/schema',
               'm':'http://www.w3.org/1998/Math/MathML'}
 
-
-def evalMath2(function, depth):
+def evalApply(function):
     op = ''
     args = []
     mml = '{http://www.w3.org/1998/Math/MathML}'
+    # Get children of the apply element:
+    function = function.getchildren()
+    print function[0].tag
     print len(function)
-    for element in function:
-        print element.tag
-        if (element.tag.find(mml + 'minus')):
-	   print "Handle minus"
-        if (element.tag.find(mml + 'ci')):
-	   print "Handle ci"
+    if len(function) == 0:
+        raise "no args!"
+    elif len(function) == 1:
+        raise "no args!"
+    elif len(function) == 2:
+        if (function[0].tag.find(mml + 'minus') == 0):
+            print "Handaling a minus"
+            apply = function[1].find(mml+'apply')
+            print apply
+            if apply != None:
+                print "Recursive!"
+                arg1 = evalApply(apply)
+            elif (function[1].tag.find(mml+'ci') == 0):
+                arg1 = function[1].text
+            elif (function[1].tag.find(mml+'cn') == 0):
+                arg1 = function[1].text
+            else:
+                raise "Bombed out in minus"
+            return ("-" + arg1)
+        elif (function[0].tag.find(mml + 'exp') == 0):
+            apply = function[1].find(mml+'apply')
+            print apply
+            if apply != None:
+                arg1 = evalApply(apply)
+            elif (function[1].tag.find(mml+'ci') == 0):
+                arg1 = function[1].text
+            elif (function[1].tag.find(mml+'cn') == 0):
+                arg1 = function[1].text
+            else:
+                raise "Bombed out in minus"
+            return ("exp(" + arg1 + ")")
+        else:
+            raise "Unknown unary op"
 
+    elif len(function) == 3:
+        print "A binary op"
+        if (function[0].tag.find(mml + 'minus') == 0):
+            print "Handaling a minus"
+            apply = function[1].find(mml+'apply')
+            print apply
+            if apply != None:
+                print "Recursive!"
+                arg1 = evalApply(apply)
+            elif (function[1].tag.find(mml+'ci') == 0):
+                arg1 = function[1].text
+            elif (function[1].tag.find(mml+'cn') == 0):
+                arg1 = function[1].text
+            else:
+                raise "Bombed out in minus"
+            apply = function[2].find(mml+'apply')
+            if apply != None:
+                arg2 = evalApply(apply)
+            elif (function[2].tag.find(mml+'ci') == 0):
+                arg2 = function[2].text
+            elif (function[2].tag.find(mml+'cn') == 0):
+                arg2 = function[2].text
+            else:
+                raise "Bombed out in minus"
+            return ("(" + arg1 + "-" + arg2 +")")
+        if (function[0].tag.find(mml + 'times') == 0):
+            apply = function[1].find(mml+'apply')
+            print apply
+            if apply != None:
+                arg1 = evalApply(apply)
+            elif (function[1].tag.find(mml+'ci') == 0):
+                arg1 = function[1].text
+            elif (function[1].tag.find(mml+'cn') == 0):
+                arg1 = function[1].text
+            else:
+                raise "Bombed out "
+            apply = function[2].find(mml+'apply')
+            if apply != None:
+                arg2 = evalApply(apply)
+            elif (function[2].tag.find(mml+'ci') == 0):
+                arg2 = function[2].text
+            elif (function[2].tag.find(mml+'cn') == 0):
+                arg2 = function[2].text
+            else:
+                raise "Bombed out "
+            return ("(" + arg1 + "*" + arg2 +")")
+        if (function[0].tag.find(mml + 'divide') == 0):
+            apply = function[1].find(mml+'apply')
+            if apply != None:
+                arg1 = evalApply(apply)
+            elif (function[1].tag.find(mml+'ci') == 0):
+                arg1 = function[1].text
+            elif (function[1].tag.find(mml+'cn') == 0):
+                arg1 = function[1].text
+            else:
+                raise "Bombed out "
+            apply = function[2].find(mml+'apply')
+            if apply != None:
+                arg2 = evalApply(apply)
+            elif (function[2].tag.find(mml+'ci') == 0):
+                arg2 = function[2].text
+            elif (function[2].tag.find(mml+'cn') == 0):
+                arg2 = function[2].text
+            else:
+                raise "Bombed out "
+            return ("(" + arg1 + "/" + arg2 +")")
+        if (function[0].tag.find(mml + 'power') == 0):
+            apply = function[1].find(mml+'apply')
+            if apply != None:
+                arg1 = evalApply(apply)
+            elif (function[1].tag.find(mml+'ci') == 0):
+                arg1 = function[1].text
+            elif (function[1].tag.find(mml+'cn') == 0):
+                arg1 = function[1].text
+            else:
+                raise "Bombed out "
+            apply = function[2].find(mml+'apply')
+            if apply != None:
+                arg2 = evalApply(apply)
+            elif (function[2].tag.find(mml+'ci') == 0):
+                arg2 = function[2].text
+            elif (function[2].tag.find(mml+'cn') == 0):
+                arg2 = function[2].text
+            else:
+                raise "Bombed out "
+            return ("(" + arg1 + "^" + arg2 +")")
+    
+    
 
 
     return()
@@ -113,5 +230,6 @@ docRoot = lxml.etree.parse(source='../buck.xml')
 math = docRoot.xpath("//m:math", namespaces)[0]
 result = evalMath(math, 0)
 print result
-math = docRoot.xpath("//m:math/m:apply/*", namespaces)
-evalMath2(math, 0)
+math = docRoot.xpath("//m:math/m:apply", namespaces)[0]
+result = evalApply(math)
+print result
