@@ -4,6 +4,25 @@ namespaces = {'c':'http://www.xml-cml.org/schema',
               'm':'http://www.w3.org/1998/Math/MathML'}
 
 
+def evalMath2(function, depth):
+    op = ''
+    args = []
+    mml = '{http://www.w3.org/1998/Math/MathML}'
+    print len(function)
+    for element in function:
+        print element.tag
+        if (element.tag.find(mml + 'minus')):
+	   print "Handle minus"
+        if (element.tag.find(mml + 'ci')):
+	   print "Handle ci"
+
+
+
+    return()
+
+
+
+
 def evalMath(function, depth):
     # expecting a single apply to process...
     op = ''
@@ -12,6 +31,7 @@ def evalMath(function, depth):
     print " "*depth + "Looking at: " 
 #    print function
     for element in function:
+        print " "*depth + element.tag 
         print " "*depth + "looping"
         ops = element.xpath("m:minus", namespaces)
         if len(ops) == 1:
@@ -93,3 +113,5 @@ docRoot = lxml.etree.parse(source='../buck.xml')
 math = docRoot.xpath("//m:math", namespaces)[0]
 result = evalMath(math, 0)
 print result
+math = docRoot.xpath("//m:math/m:apply/*", namespaces)
+evalMath2(math, 0)
