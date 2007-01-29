@@ -27,14 +27,16 @@
                   <m:apply>
                     <m:exp/>
                     <m:ci>
+                          <m:apply>
+                            <m:divide/>
+                        <m:ci>
                       <m:apply>
                         <m:minus/>
-                        <m:ci>
-                          <m:divide/>
-                          <m:ci>R</m:ci>
-                          <m:ci>roh</m:ci>
-                        </m:ci>
+                            <m:ci>R</m:ci>
                       </m:apply>
+                        </m:ci>
+                            <m:ci>roh</m:ci>
+                          </m:apply>
                     </m:ci>
                   </m:apply>
                 </m:ci>

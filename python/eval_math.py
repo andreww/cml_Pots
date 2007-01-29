@@ -34,7 +34,24 @@ def evalMath(function, depth):
             print depth*" " + "divide found"
             op = '/'
 #            continue
-
+#        cn = element.xpath("m:cn/text()", namespaces)
+#        if len(cn) != 0:
+#            for value in cn:
+#                print " "*depth + "A cn found for processing:" + value
+#                args.append(value)
+                # Turn number into a number and add it to dict
+#            continue 
+#        ci = element.xpath("normalize-space(m:ci/text())", namespaces)
+        ci = element.xpath("m:ci[not(m:apply)]/text()|m:cn/text()", namespaces)
+        if (len(ci) != 0):
+            for value in ci:
+                if not value.isspace():
+                    print " "*depth + "ci found for processing: '" + value +"'"
+                    args.append(value)
+#                print element
+#            continue
+# NOTE: Bugfix needed - catches apply fist by the looks of it...
+# do I need to combine ciapply and ci logic?
         ciapply = element.xpath("m:ci[m:apply]", namespaces)
         if len(ciapply) != 0:
             for value in ciapply:
@@ -42,22 +59,6 @@ def evalMath(function, depth):
                 args.append(evalMath(value, depth + 1))
                 print "BACK"
                 # add result to dict
-#            continue
-        cn = element.xpath("m:cn/text()", namespaces)
-        if len(cn) != 0:
-            for value in cn:
-                print " "*depth + "A cn found for processing:" + value
-                args.append(value)
-                # Turn number into a number and add it to dict
-#            continue 
-#        ci = element.xpath("normalize-space(m:ci/text())", namespaces)
-        ci = element.xpath("m:ci/text()", namespaces)
-        if (len(ci) != 0):
-            for value in ci:
-                if not value.isspace():
-                    print " "*depth + "ci found for processing: '" + value +"'"
-                    args.append(value)
-#                print element
 #            continue
 #        ci = None
 #        cn = None
@@ -68,9 +69,9 @@ def evalMath(function, depth):
         raise "No args"
     elif len(args) == 1:
         if op == '-':
-            return ('(' + '-' + args[0] + ')')
+            return ('-' + args[0] )
         elif op == 'exp':
-            return ('(' + 'exp(' + args[0] + ')' + ')')
+            return ('exp(' + args[0] + ')' )
         else:
             raise "Unary op not known"
     elif len(args) == 2:
