@@ -18,8 +18,10 @@ class mathml:
         elif len(elements) == 1:
            raise "only one element"
         elif len(elements) >= 2:
-           for bvar in elements[0:-2]:
-               self.boundVars = boundVars + bvar.text()
+           bvar = elements[0]
+           ci = bvar.getchildren()
+           var = [ci[0].text]
+           self.boundVars = self.boundVars + var
            apply = elements[-1]
            if apply != None:
                if apply.tag != (mml + 'apply'):

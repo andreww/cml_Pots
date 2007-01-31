@@ -41,6 +41,7 @@ class potential:
             print "MathML expression is also present"
             result = mathml(elements[0])
             print result.evalLambda()
+            print result.boundVars
         elif len(elements) == None:
             print "No MathML expression..."
         else:
