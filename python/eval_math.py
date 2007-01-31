@@ -9,6 +9,20 @@ class mathml:
         self.expression = ''
         self.boundVars = []
 
+    def parseMML(self):
+        elements = self.xml.getchildren()
+        if len(elements) != 1:
+            raise "Can only have one expression in a math fragment"
+        if elements[0].tag.find('{http://www.w3.org/1998/Math/MathML}lambda') == 0:
+            child = mathml(elements[0])
+            self.expression = child.evalLambda()
+        elif elements[0].tag.find('{http://www.w3.org/1998/Math/MathML}apply') == 0:
+            child = mathml(elements[0])
+            self.expression = child.evalApply()
+        else:
+            raise "Could not parse Math"
+        return()
+
     def evalLambda(self):
         mml = '{http://www.w3.org/1998/Math/MathML}'
         

@@ -46,6 +46,12 @@ class potential:
             print "No MathML expression..."
         else:
             raise "More than one MathML expression found!"
+        math = self.xml_potential.xpath(
+            "c:expression/m:math", namespaces)
+        result2 = mathml(math[0])
+        result2.parseMML()
+        print result2.expression
+        print result2.boundVars
 
 
 
