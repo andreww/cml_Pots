@@ -1,0 +1,36 @@
+<element name="cml" ns="http://www.xml-cml.org/schema" xmlns="http://relaxng.org/ns/structure/1.0">
+  <element name="potentialList">
+    <attribute name="dictRef"><text/></attribute>
+    <oneOrMore>
+      <element name="potential">
+         <attribute name="id"><text/></attribute>
+         <element name="expression"></element>
+         <element name="arg">
+            <element name="scalar">
+              <text/>
+            </element>
+         </element>
+         <optional>
+           <element name="metadataList">
+             <oneOrMore>
+               <element name="metadata">
+                  <attribute name="name"><text/></attribute>
+                  <attribute name="content"><text/></attribute>
+               </element>
+             </oneOrMore>
+           </element>
+         </optional>
+      </element>
+    </oneOrMore>
+    <optional>
+      <element name="metadataList">
+         <oneOrMore>
+           <element name="metadata">
+              <attribute name="name"><text/></attribute>
+              <attribute name="content"><text/></attribute>
+           </element>
+         </oneOrMore>
+      </element>
+    </optional>
+  </element>
+</element>
