@@ -1,4 +1,5 @@
 import lxml.etree
+from eval_math import mathml
 
 namespaces = {'c':'http://www.xml-cml.org/schema',
               'm':'http://www.w3.org/1998/Math/MathML'}
@@ -17,18 +18,33 @@ class potential:
                 content = item.xpath("@content", namespaces)[0]
                 print "    " + name + " = " + content 
         elements = self.xml_potential.xpath(
+           "c:expression/c:parameter", namespaces)
+        if len(elements) != 0:
+            print "Parameters:"
+            for item in elements:
+                name = item.xpath("@name", namespaces)[0]
+                ref = item.xpath("@dictRef", namespaces)[0]
+                value = item.xpath("c:scalar/text()", namespaces)[0]
+                units = item.xpath("c:scalar/@units", namespaces)[0]
+                print "    " + name + " " + ref + " " + value + " " + units
+        elements = self.xml_potential.xpath(
            "c:expression/c:arg", namespaces)
         if len(elements) != 0:
             print "Arguments:"
             for item in elements:
-                ref = item.xpath("@ref", namespaces)[0]
-                value = item.xpath("c:scalar/text()", namespaces)[0]
+                name = item.xpath("@name", namespaces)[0]
                 units = item.xpath("c:scalar/@units", namespaces)[0]
-                print "    " + ref + " " + value + " " + units
+                print "    " + name + " " + units
         elements = self.xml_potential.xpath(
-           "c:expression/m:math", namespaces)
+           "c:expression/m:math/m:lambda", namespaces)
         if len(elements) == 1:
             print "MathML expression is also present"
+            result = mathml(elements[0])
+            print result.evalLambda()
+        elif len(elements) == None:
+            print "No MathML expression..."
+        else:
+            raise "More than one MathML expression found!"
 
 
 

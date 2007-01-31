@@ -17,45 +17,48 @@
       </metadataList>
       <expression>
         <m:math>
-          <m:apply>
-            <m:minus/>
-            <m:ci>
-              <m:apply>
-                <m:times/>
-                <m:ci>a</m:ci>
-                <m:ci>
-                  <m:apply>
-                    <m:exp/>
-                    <m:ci>
-                          <m:apply>
-                            <m:divide/>
-                        <m:ci>
-                      <m:apply>
-                        <m:minus/>
-                            <m:ci>R</m:ci>
-                      </m:apply>
-                        </m:ci>
-                            <m:ci>roh</m:ci>
-                          </m:apply>
-                    </m:ci>
-                  </m:apply>
-                </m:ci>
-              </m:apply>
-            </m:ci>
-            <m:ci>
-              <m:apply>
-                <m:divide/>
-                <m:ci>c</m:ci>
-                <m:ci>
-                  <m:apply>
-                    <m:power/>
-                    <m:ci>R</m:ci>
-                    <m:cn>6</m:cn>
-                  </m:apply>
-                </m:ci>
-              </m:apply>
-            </m:ci>
-          </m:apply>
+          <m:lambda>
+            <m:bvar><m:ci>R</m:ci></m:bvar>
+            <m:apply>
+              <m:minus/>
+              <m:ci>
+                <m:apply>
+                  <m:times/>
+                  <m:ci>a</m:ci>
+                  <m:ci>
+                    <m:apply>
+                      <m:exp/>
+                      <m:ci>
+                        <m:apply>
+                          <m:divide/>
+                          <m:ci>
+                            <m:apply>
+                              <m:minus/>
+                              <m:ci>R</m:ci>
+                            </m:apply>
+                          </m:ci>
+                          <m:ci>roh</m:ci>
+                        </m:apply>
+                      </m:ci>
+                    </m:apply>
+                  </m:ci>
+                </m:apply>
+              </m:ci>
+              <m:ci>
+                <m:apply>
+                  <m:divide/>
+                  <m:ci>c</m:ci>
+                  <m:ci>
+                    <m:apply>
+                      <m:power/>
+                      <m:ci>R</m:ci>
+                      <m:cn>6</m:cn>
+                    </m:apply>
+                  </m:ci>
+                </m:apply>
+              </m:ci>
+            </m:apply>
+          </m:lambda>
         </m:math>
 <!-- Parameters for the potential
 
@@ -94,7 +97,8 @@ codes
         </parameter>
 <!-- Arguments (indepedant variables) of the potential are encoded as <arg>s
 with a name (corresponding to the ci) dictRef and units  -->
-        <arg name="r" dictRef="gulp:buckingham.R">
+        <arg name="R" dictRef="gulp:buckingham.R">
+          <scalar units="gulpunits:Ang"/>
 <!-- UNITS (Angstroms as it happens) but no vaue! -->
         </arg>
       </expression>
