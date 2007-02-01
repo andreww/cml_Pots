@@ -18,7 +18,7 @@ class potential:
                 content = item.xpath("@content", namespaces)[0]
                 print "    " + name + " = " + content 
         elements = self.xml_potential.xpath(
-           "c:expression/c:parameter", namespaces)
+           "c:parameter", namespaces)
         if len(elements) != 0:
             print "Parameters:"
             for item in elements:
@@ -52,7 +52,10 @@ class potential:
         result2.parseMML()
         print result2.expression
         print result2.boundVars
-
+        func = result2.asPythonFunction()
+        print func(2)
+        for i in xrange(100)
+            print func(i)
 
 
 

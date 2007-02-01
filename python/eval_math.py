@@ -9,6 +9,17 @@ class mathml:
         self.expression = ''
         self.boundVars = []
 
+    def asPythonFunction(self):
+        print "In asPythonFunction"
+        print self.boundVars
+        ## funcstring = "fun = lambda " + self.boundVars[0] + ": " + self.expression
+        ## eval (funcstring)
+        ## eval("def fun(" + self.boundVars[0] + "): return "+self.expression)
+        f = compile("def fun(" + self.boundVars[0] + "): return "+self.expression, '<string>', 'exec')
+        eval(f)
+        return fun
+
+
     def parseMML(self):
         elements = self.xml.getchildren()
         if len(elements) != 1:
@@ -16,6 +27,7 @@ class mathml:
         if elements[0].tag.find('{http://www.w3.org/1998/Math/MathML}lambda') == 0:
             child = mathml(elements[0])
             self.expression = child.evalLambda()
+            self.boundVars = child.boundVars
         elif elements[0].tag.find('{http://www.w3.org/1998/Math/MathML}apply') == 0:
             child = mathml(elements[0])
             self.expression = child.evalApply()
@@ -43,6 +55,7 @@ class mathml:
                else:
                    self.expression = mathml(apply)
                    self.expression = self.expression.evalApply()
+                  # self.expression = self.eval(apply)
            else:
                raise "apply not found in evalLambda"
       
