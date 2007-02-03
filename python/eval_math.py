@@ -196,7 +196,7 @@ class mathml:
                     arg2 = function[2].text
                 else:
                     raise "Bombed out "
-                return ("pow(" + arg1 + "," + arg2 +")")
+                return ("math.pow(" + arg1 + "," + arg2 +")")
         raise "Dropped off parser!"
     
     
