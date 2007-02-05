@@ -53,15 +53,10 @@ class potential:
         math = self.xml_potential.xpath(
             "c:expression/m:math", namespaces)
         if len(math) == 1:
-#            print "MathML expression is also present"
             transDict = {self.arguments[0]: self.arguments[0]}
             transDict.update(self.parameters)
-#            print "TransDict"
-#            print transDict
             result2 = mathml(math[0], transDict)
             result2.parseMML()
-#            print result2.expression
-#            print result2.boundVars
             self.func = result2.asPythonFunction()
 
         return
@@ -170,7 +165,7 @@ class potential:
             if r == 0:
                 G = 0
             else:
-                G = -1 * r * (self.func(r-(delpot/10))-self.func(r+(delpot/10))/(delpot/20))
+                G = -1 * r * (self.func(r-(delpot/10))-self.func(r+(delpot/10))/(2*(delpot/10)))
             point = point + 1
             loc = loc + 1
             r = (delpot*point)
@@ -182,13 +177,20 @@ class potential:
             else:
                 line = line + "%15f" % G
 
-#docRoot = lxml.etree.parse(source='../gulp_example1.xml')
-docRoot = lxml.etree.parse(source='../buck.xml')
-allpots = docRoot.xpath("/c:cml/c:potentialList/c:potential", namespaces)
-for pot in allpots:
-    mypot = potential(pot)
-    mypot.print_cml()
-    mypot.asTABLE(0.001, 10)
 
+if __name__ == "__main__":
+    import sys
+
+    command = sys.argv[1]
+    sourcefile = sys.argv[2]
+
+    docRoot = lxml.etree.parse(source=sourcefile)
+    allpots = docRoot.xpath("/c:cml/c:potentialList/c:potential", namespaces)
+    for pot in allpots:
+        mypot = potential(pot)
+        if command == 'TABLE':
+            mypot.asTABLE(0.001, 10)
+        elif command == 'dump':
+            mypot.print_cml()
 
 
