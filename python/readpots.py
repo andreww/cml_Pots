@@ -14,11 +14,25 @@ class potential:
         self.arguments = []
         self._parse(xml_potential)
 
+    def asXHTML(self):
+        """This method returns a fragment of XHTML representing the 
+           potential. The fragment is rooted at a <div> to allow 
+           multiple potentals to be serialised in a single html 
+           document by the caller."""
+        NS = "{http://www.w3.org/1999/xhtml}"
+        root = lxml.etree.Element(NS+"div", attrib={"id": "CMLPotential"})
+        document = lxml.etree.ElementTree(root)
+        return document
+
     def asSVG(self, min, max, step):
-        transformDoc = lxml.etree.parse(source="pelote.xls")
-        transform = lxml.XSLT(TransformDoc)
+        print "In asSVG"
+        transformDoc = lxml.etree.parse(source="pelote.xsl")
+        print "Read transform"
+        print transformDoc
+        transform = lxml.etree.XSLT(transformDoc)
+        print "Built XSLT"
         result = transform(self._pelote(min, max, step))
-        return (result)
+        return result
 
     def _pelote(self, min, max, step):
         NS = "{http://www.uszla.me.uk/xsl/1.0/pelote}"
@@ -39,7 +53,7 @@ class potential:
         document = lxml.etree.ElementTree(root)
         #docroot = document.getroot()
         #docroot.append(PI)
-        return (document)      
+        return document      
 
 
     def _parse(self, xml):
@@ -205,6 +219,8 @@ class potential:
             else:
                 line = line + "%15f" % G
 
+        return
+
 
 if __name__ == "__main__":
     import sys
@@ -228,3 +244,6 @@ if __name__ == "__main__":
         elif command == 'svg':
             svg = mypot.asSVG(0.1, 10, 0.1)
             svg.write("test2.svg")
+        elif command == 'html':
+            html = mypot.asXHTML()
+            html.write("test.html")
