@@ -25,12 +25,8 @@ class potential:
         return document
 
     def asSVG(self, min, max, step):
-        print "In asSVG"
-        transformDoc = lxml.etree.parse(source="pelote.xsl")
-        print "Read transform"
-        print transformDoc
+        transformDoc = lxml.etree.parse(source="XSLT/pelote.xsl")
         transform = lxml.etree.XSLT(transformDoc)
-        print "Built XSLT"
         result = transform(self._pelote(min, max, step))
         return result
 
@@ -242,7 +238,7 @@ if __name__ == "__main__":
   #          lxml.etree.ElementTree(pelote).write("test")
             pelote.write("test")
         elif command == 'svg':
-            svg = mypot.asSVG(0.1, 10, 0.1)
+            svg = mypot.asSVG(1.1, 10, 0.1)
             svg.write("test2.svg")
         elif command == 'html':
             html = mypot.asXHTML()
