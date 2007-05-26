@@ -34,6 +34,8 @@ contains
   integer :: iostat
  
   call open_xml_file(xp, filename, iostat)
+  ! TODO probably need to check iostat in case of read errors. Otherwise will
+  !      get runtime crash if filename does not exist or whatever.
   call parse(xp, characters_handler=handle_chars, &
              &   startDocument_handler=handle_docStart, &
              &   startElement_handler=handle_startElement, &
