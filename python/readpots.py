@@ -110,62 +110,15 @@ class potential:
         return
 
     def asText(self):
-        #elements = self.xml_potential.xpath(
-        #  "c:metadataList/c:metadata[@name][@content]", namespaces)
-        #if len(elements) != 0:
-        #    print "Metadata found:"
-        #    for item in elements:
-        #        name = item.xpath("@name", namespaces)[0]
-        #        content = item.xpath("@content", namespaces)[0]
-        #        print "    " + name + " = " + content 
         print "Metadata dictionary:"
         print self.metadata
-        #elements = self.xml_potential.xpath(
-        #   "c:parameter", namespaces)
-        #if len(elements) != 0:
-        #    print "Parameters:"
-        #    for item in elements:
-        #        name = item.xpath("@name", namespaces)[0]
-        #        ref = item.xpath("@dictRef", namespaces)[0]
-        #        value = item.xpath("c:scalar/text()", namespaces)[0]
-        #        units = item.xpath("c:scalar/@units", namespaces)[0]
-        #        print "    " + name + " " + ref + " " + value + " " + units
-        #        self.parameters[name] = value
         print "Parameters:"
         print self.parameters
         print self.parameterUnits
         print self.parameterRefs
-        #elements = self.xml_potential.xpath(
-        #   "c:expression/c:arg", namespaces)
-        #if len(elements) != 0:
-        #    print "Arguments:"
-        #    for item in elements:
-        #        name = item.xpath("@name", namespaces)[0]
-        #        units = item.xpath("c:scalar/@units", namespaces)[0]
-        #        print "    " + name + " " + units
-        #        self.parameters[name] = name
         print "Arguments:"
         print self.arguments
- #       math = self.xml_potential.xpath(
- #           "c:expression/m:math", namespaces)
- #       if len(math) == 1:
- #           print "MathML expression is also present"
- #           transDict = {self.arguments[0]: self.arguments[0]}
- #           transDict.update(self.parameters)
- #           print "TransDict"
- #           print transDict
- #           result2 = mathml(math[0], transDict)
- #           result2.parseMML()
- #           print result2.expression
- #           print result2.boundVars
- #           func = result2.asPythonFunction()
-        for i in xrange(1, 50):
-            j = i/10.0
-            print str(j) + " = " + str(self.func(j))
-#        elif len(elements) == None:
-#           print "No MathML expression..."
-#        else:
-#           raise "More than one MathML expression found!"
+        return
 
     def asTABLE(self, delpot, cutpot):
         """Dumps (to STDOUT) a DL_Poly TABLE file for the potential 
@@ -241,8 +194,10 @@ if __name__ == "__main__":
     for pot in allpots:
         mypot = potential(pot)
         if command == 'TABLE':
+            #TODO - open filehandle on destfile and pass to asTable to write to.
             mypot.asTABLE(0.001, 10)
         elif command == 'text':
+            #TODO - open filehandle on destfile and pass to asText to write to.
             mypot.asText()
         elif command == 'pelote':
             pelote =  mypot._pelote(0.1, 10, 0.1)
