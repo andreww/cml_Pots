@@ -54,7 +54,8 @@ codes
         <scalar units="gulpunits:Ang^-1">2.649000000000e-1</scalar>
       </parameter>
       <parameter name="c" dictRef="gulp:buckingham.c">
-        <scalar units="gulpunits:eV^-6">0.000000000000e0</scalar>
+<!--Modified from 0 to 10 to show how it changes graph)-->
+        <scalar units="gulpunits:eV^-6">-10.000000000000e0</scalar>
       </parameter>
 <!-- The chunk of stuff within the expression will be the same for all
      instances of this type of potential - so this can be included with
