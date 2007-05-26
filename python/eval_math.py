@@ -199,7 +199,8 @@ class mathml:
                 return ("math.pow(" + arg1 + "," + arg2 +")")
         raise "Dropped off parser!"
     
-    
+ 
+# TODO - add testing methods here... need to be able to refactor
 # Load in XML document, extract any MathML
 #docRoot = lxml.etree.parse(source='../buck.xml')
 #math = docRoot.xpath("//m:math/m:apply", namespaces)[0]
