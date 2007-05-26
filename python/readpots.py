@@ -21,13 +21,23 @@ class potential:
            document by the caller."""
         NS = "{http://www.w3.org/1999/xhtml}"
         root = lxml.etree.Element(NS+"div", attrib={"id": "CMLPotential"})
+        # TODO - add the rest of the markup here
+        # TODO - include argument to turn on and embedd SVG
         document = lxml.etree.ElementTree(root)
         return document
 
     def asSVG(self, min, max, step):
-        transformDoc = lxml.etree.parse(source="XSLT/pelote.xsl")
-        transform = lxml.etree.XSLT(transformDoc)
-        result = transform(self._pelote(min, max, step))
+        """This method returns a SVG representation of the potential energy 
+        as a function of distance. Makes use of Toby White's Pelote language 
+        and XSLT transform. Note - the transform gives a buss error on some
+        systems, notably my MacBook and debian Sarge systems."""
+        hasXSLTproc = 0 # TODO - find some way to automate this. Set to 1 to enable XSLT
+	if (hasXSLTproc == 1):
+            transformDoc = lxml.etree.parse(source="XSLT/pelote.xsl")
+            transform = lxml.etree.XSLT(transformDoc)
+            result = transform(self._pelote(min, max, step))
+        else:
+            raise "XSLT protection fault."
         return result
 
     def _pelote(self, min, max, step):
@@ -44,7 +54,7 @@ class potential:
             point = lxml.etree.SubElement(pointlist, NS+"point")
             point.attrib["x"] = str(x)
             point.attrib["y"] = str(value)
-            #print str(x) + "=" + str(value)
+            print str(x) + "=" + str(value)
             x = x + step
         document = lxml.etree.ElementTree(root)
         #docroot = document.getroot()
@@ -226,6 +236,7 @@ if __name__ == "__main__":
 
     docRoot = lxml.etree.parse(source=sourcefile)
     allpots = docRoot.xpath("/c:cml/c:potentialList/c:potential", namespaces)
+
     for pot in allpots:
         mypot = potential(pot)
         if command == 'TABLE':
