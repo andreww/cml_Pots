@@ -109,7 +109,7 @@ class potential:
 
         return
 
-    def print_cml(self):
+    def asText(self):
         #elements = self.xml_potential.xpath(
         #  "c:metadataList/c:metadata[@name][@content]", namespaces)
         #if len(elements) != 0:
@@ -233,6 +233,7 @@ if __name__ == "__main__":
 
     command = sys.argv[1]
     sourcefile = sys.argv[2]
+    destfile = sys.argv[3]
 
     docRoot = lxml.etree.parse(source=sourcefile)
     allpots = docRoot.xpath("/c:cml/c:potentialList/c:potential", namespaces)
@@ -241,16 +242,14 @@ if __name__ == "__main__":
         mypot = potential(pot)
         if command == 'TABLE':
             mypot.asTABLE(0.001, 10)
-        elif command == 'dump':
-            mypot.print_cml()
+        elif command == 'text':
+            mypot.asText()
         elif command == 'pelote':
             pelote =  mypot._pelote(0.1, 10, 0.1)
-            print pelote
-  #          lxml.etree.ElementTree(pelote).write("test")
-            pelote.write("test")
+            pelote.write(destfile)
         elif command == 'svg':
             svg = mypot.asSVG(1.1, 10, 0.1)
-            svg.write("test2.svg")
+            svg.write(destfile)
         elif command == 'html':
             html = mypot.asXHTML()
-            html.write("test.html")
+            html.write(destfile)
