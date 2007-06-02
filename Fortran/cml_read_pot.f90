@@ -18,6 +18,7 @@ module cml_read_pot
  integer, parameter :: IN_POTENTIAL = 2
  integer, parameter :: IN_ARG = 4
  integer, parameter :: IN_SCALAR = 8
+ integer, parameter :: IN_PARAMETER = 16
 
  character(len=20), save :: potid   ! The ID of the potential being looked at...
 
@@ -59,10 +60,11 @@ contains
 
   character(len=*), intent(in) :: chars
   
-   print*, "CML read DEBUG: HANDLE_CHARS was called: ", trim(chars)
-   print*,  "parser state: ", parser_state
+   print*, "CML read DEBUG: HANDLE_CHARS was called with parser_state:  ", parser_state
   if (parser_state == (IN_POTENTIALLIST + IN_POTENTIAL + IN_ARG + IN_SCALAR) ) then 
-   print*, "CML read DEBUG: HANDLE_CHARS was called: ", chars
+   print*, "CML read DEBUG: HANDLE_CHARS was called for argument: ", chars
+  elseif (parser_state == (IN_POTENTIALLIST + IN_POTENTIAL + IN_PARAMETER + IN_SCALAR) ) then 
+   print*, "CML read DEBUG: HANDLE_CHARS was called for parameters: ", chars
   end if
 
  end subroutine handle_chars
@@ -98,6 +100,9 @@ contains
           else if ((localName == "scalar").and.(namespaceURI == CMLNS)) then
                parser_state = parser_state + IN_SCALAR
                print*, "CML read DEBUG: In a scalar"
+          else if ((localName == "parameter").and.(namespaceURI == CMLNS)) then 
+               parser_state = parser_state + IN_PARAMETER
+               print*, "CML read DEBUG: In a parameter"
           end if
 !
 ! Ok then, is this the start of an intresting chunk of 
@@ -128,6 +133,9 @@ contains
     else if ((localName == "scalar").and.(namespaceURI == CMLNS)) then
         print*, "CML read DEBUG: Out of scalar"
         parser_state = parser_state - IN_SCALAR
+    else if ((localName == "parameter").and.(namespaceURI == CMLNS)) then
+        print*, "CML read DEBUG: Out of parameter"
+        parser_state = parser_state - IN_PARAMETER
    end if
   end if
 
