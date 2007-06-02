@@ -3,13 +3,8 @@ module cml_read_pot
  use FoX_sax
  implicit none
 
- character(len=29), parameter :: cmlns = 'http://www.xml-cml.org/schema'
- ! What is the state of the SAX parser
- ! 0 = not in a potentialList (nothing of intrest)
- ! 1 = in a potentialList
- ! 2 = in a potential 
- ! 3 = in an arg
- ! 4 = in a scalar (I'm assuming we are not having array arguments for now)
+
+ ! Sate of the SAX parser
  ! This should only ever increse or decrese by one and should never 
  ! transform between two of the same values.
  integer, save :: parser_state = 0
@@ -19,7 +14,11 @@ module cml_read_pot
  integer, parameter :: IN_ARG = 4
  integer, parameter :: IN_SCALAR = 8
  integer, parameter :: IN_PARAMETER = 16
+ 
+ ! CML namespace
+ character(len=29), parameter :: cmlns = 'http://www.xml-cml.org/schema'
 
+ ! State for current potential.
  character(len=20), save :: potid   ! The ID of the potential being looked at...
 
  type(xml_t), save :: xp
