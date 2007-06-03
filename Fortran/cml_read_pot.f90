@@ -38,36 +38,36 @@ contains
 
  subroutine cml_read_pots(filename)
 
-  character(len=*) :: filename
-  integer :: iostat
+      character(len=*) :: filename
+      integer :: iostat
  
-  call open_xml_file(xp, filename, iostat)
-  ! TODO probably need to check iostat in case of read errors. Otherwise will
-  !      get runtime crash if filename does not exist or whatever.
-  call parse(xp, characters_handler=handle_chars, &
+      call open_xml_file(xp, filename, iostat)
+      ! TODO probably need to check iostat in case of read errors. Otherwise will
+      !      get runtime crash if filename does not exist or whatever.
+      call parse(xp, characters_handler=handle_chars, &
              &   startDocument_handler=handle_docStart, &
              &   startElement_handler=handle_startElement, &
              &   endElement_handler=handle_endElement)
-  call close_xml_t(xp)
+      call close_xml_t(xp)
 
  end subroutine cml_read_pots
 
  subroutine handle_docStart
 
-  print*, "CML read DEBUG: At start of document"
+      print*, "CML read DEBUG: At start of document"
 
  end subroutine handle_docStart
  
  subroutine handle_chars(chars)
 
-  character(len=*), intent(in) :: chars
+      character(len=*), intent(in) :: chars
   
-   print*, "CML read DEBUG: HANDLE_CHARS was called with parser_state:  ", parser_state
-  if (parser_state == (OUTSIDE_BLOCK + IN_POTENTIALLIST + IN_POTENTIAL + IN_ARG + IN_SCALAR) ) then 
-   print*, "CML read DEBUG: HANDLE_CHARS was called for argument: ", chars
-  elseif (parser_state == (OUTSIDE_BLOCK + IN_POTENTIALLIST + IN_POTENTIAL + IN_PARAMETER + IN_SCALAR) ) then 
-   print*, "CML read DEBUG: HANDLE_CHARS was called for parameters: ", chars
-  end if
+         print*, "CML read DEBUG: HANDLE_CHARS was called with parser_state:  ", parser_state
+      if (parser_state == (OUTSIDE_BLOCK + IN_POTENTIALLIST + IN_POTENTIAL + IN_ARG + IN_SCALAR) ) then 
+         print*, "CML read DEBUG: HANDLE_CHARS was called for argument: ", chars
+      elseif (parser_state == (OUTSIDE_BLOCK + IN_POTENTIALLIST + IN_POTENTIAL + IN_PARAMETER + IN_SCALAR) ) then 
+         print*, "CML read DEBUG: HANDLE_CHARS was called for parameters: ", chars
+      end if
 
  end subroutine handle_chars
 
@@ -137,37 +137,37 @@ contains
  end subroutine handle_startElement
 
  subroutine handle_endElement(namespaceURI, localName, QName)
-  character(len=*), intent(in) :: namespaceURI
-  character(len=*), intent(in) :: localName
-  character(len=*), intent(in) :: QName
+     character(len=*), intent(in) :: namespaceURI
+     character(len=*), intent(in) :: localName
+     character(len=*), intent(in) :: QName
 
-  ! We are not intrested in other namespaces
-  if (namespaceURI /= CMLNS) return
+     ! We are not intrested in other namespaces
+     if (namespaceURI /= CMLNS) return
 
-  if (parser_state.ge.(OUTSIDE_BLOCK + IN_POTENTIALLIST)) then
-   if ((localName == 'potentialList').and.(namespaceURI == CMLNS)) then
-     parser_state = parser_state - IN_POTENTIALLIST
-     print*, "CML read DEBUG: Out of Pot list"
-    else if ((localName =='potential').and.(namespaceURI == CMLNS)) then
-        print*, "CML read DEBUG: Out of potential"
-        parser_state = parser_state - IN_POTENTIAL
-    else if ((localName == "arg").and.(namespaceURI == CMLNS)) then
-        print*, "CML read DEBUG: Out of arg"
-        parser_state = parser_state - IN_ARG
-    else if ((localName == "scalar").and.(namespaceURI == CMLNS)) then
-        print*, "CML read DEBUG: Out of scalar"
-        parser_state = parser_state - IN_SCALAR
-    else if ((localName == "parameter").and.(namespaceURI == CMLNS)) then
-        print*, "CML read DEBUG: Out of parameter"
-        parser_state = parser_state - IN_PARAMETER
-    else if (localName == "atomArray") then
-        print*, "CML read DEBUG: Out of atomArray"
-        parser_state = parser_state - IN_ATOMARRAY
-    else if (localName == "atom") then
-        print*, "CML read DEBUG: Out of atom"
-        parser_state = parser_state - IN_ATOM
-   end if
-  end if
+     if (parser_state.ge.(OUTSIDE_BLOCK + IN_POTENTIALLIST)) then
+         if ((localName == 'potentialList').and.(namespaceURI == CMLNS)) then
+              parser_state = parser_state - IN_POTENTIALLIST
+              print*, "CML read DEBUG: Out of Pot list"
+          else if ((localName =='potential').and.(namespaceURI == CMLNS)) then
+              print*, "CML read DEBUG: Out of potential"
+              parser_state = parser_state - IN_POTENTIAL
+          else if ((localName == "arg").and.(namespaceURI == CMLNS)) then
+              print*, "CML read DEBUG: Out of arg"
+              parser_state = parser_state - IN_ARG
+          else if ((localName == "scalar").and.(namespaceURI == CMLNS)) then
+              print*, "CML read DEBUG: Out of scalar"
+              parser_state = parser_state - IN_SCALAR
+          else if ((localName == "parameter").and.(namespaceURI == CMLNS)) then
+              print*, "CML read DEBUG: Out of parameter"
+              parser_state = parser_state - IN_PARAMETER
+          else if (localName == "atomArray") then
+              print*, "CML read DEBUG: Out of atomArray"
+              parser_state = parser_state - IN_ATOMARRAY
+          else if (localName == "atom") then
+              print*, "CML read DEBUG: Out of atom"
+              parser_state = parser_state - IN_ATOM
+         end if
+     end if
 
  end subroutine handle_endElement
 
