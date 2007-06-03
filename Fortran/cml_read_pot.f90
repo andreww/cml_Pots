@@ -5,8 +5,6 @@ module cml_read_pot
 
 
  ! Sate of the SAX parser
- ! This should only ever increse or decrese by one and should never 
- ! transform between two of the same values.
  integer, save :: parser_state = 0
 
  integer, parameter :: IN_POTENTIALLIST = 1
@@ -14,7 +12,8 @@ module cml_read_pot
  integer, parameter :: IN_ARG = 4
  integer, parameter :: IN_SCALAR = 8
  integer, parameter :: IN_PARAMETER = 16
- 
+ integer, parameter :: IN_ATOMARRAY = 32
+ integer, parameter :: IN_ATOM = 64 
  ! CML namespace
  character(len=29), parameter :: cmlns = 'http://www.xml-cml.org/schema'
 
@@ -74,6 +73,8 @@ contains
       character(len=*), intent(in) :: QName
       type(dictionary_t), intent(in) :: attributes
 
+  ! We are not intrested in other namespaces
+  if (namespaceURI /= CMLNS) return
       
 !
 ! Are we in a chunk of XML that is intresting
@@ -93,16 +94,31 @@ contains
                    potid = getValue(attributes, "", "id")
                end if 
                print*, "CML read DEBUG: And this has an ID: ", potid
-          else if ((localName == "arg").and.(namespaceURI == CMLNS)) then
+          else if (localName == "arg") then
                parser_state = parser_state + IN_ARG
                print*, "CML read DEBUG: In an argument"
-          else if ((localName == "scalar").and.(namespaceURI == CMLNS)) then
+          else if (localName == "scalar") then
                parser_state = parser_state + IN_SCALAR
                print*, "CML read DEBUG: In a scalar"
-          else if ((localName == "parameter").and.(namespaceURI == CMLNS)) then 
+          else if (localName == "parameter") then 
                parser_state = parser_state + IN_PARAMETER
                print*, "CML read DEBUG: In a parameter"
+          else if (localName == "atomArray") then
+              print*, "CML read DEBUG: In an atomArray"
+              parser_state = parser_state + IN_ATOMARRAY
+          else if (localName == "atom") then
+              print*, "CML read DEBUG: In an atom"
+              parser_state = parser_state + IN_ATOM
           end if
+
+!  Grab intresting attributes if we are in an intresting state
+          if (parser_state == IN_POTENTIALLIST + IN_POTENTIAL &
+               & + IN_ATOMARRAY + IN_ATOM) then
+            if (hasKey(attributes, "elementType")) then
+                 print*, "Atom type is:", getValue(attributes, "", "elementType")
+            endif 
+          end if
+
 !
 ! Ok then, is this the start of an intresting chunk of 
 ! XML?
@@ -118,6 +134,9 @@ contains
   character(len=*), intent(in) :: namespaceURI
   character(len=*), intent(in) :: localName
   character(len=*), intent(in) :: QName
+
+  ! We are not intrested in other namespaces
+  if (namespaceURI /= CMLNS) return
 
   if (parser_state.ge.1) then
    if ((localName == 'potentialList').and.(namespaceURI == CMLNS)) then
@@ -135,6 +154,12 @@ contains
     else if ((localName == "parameter").and.(namespaceURI == CMLNS)) then
         print*, "CML read DEBUG: Out of parameter"
         parser_state = parser_state - IN_PARAMETER
+    else if (localName == "atomArray") then
+        print*, "CML read DEBUG: Out of atomArray"
+        parser_state = parser_state - IN_ATOMARRAY
+    else if (localName == "atom") then
+        print*, "CML read DEBUG: Out of atom"
+        parser_state = parser_state - IN_ATOM
    end if
   end if
 
