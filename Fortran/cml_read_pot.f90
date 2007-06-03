@@ -7,7 +7,7 @@ module cml_read_pot
  public :: cml_read_pots 
 
 
- ! Sate of the SAX parser
+ ! Sate for the SAX parser
  ! Known states:
  integer, parameter :: OUTSIDE_BLOCK = 0
  integer, parameter :: IN_POTENTIALLIST = 1
@@ -19,13 +19,9 @@ module cml_read_pot
  integer, parameter :: IN_ATOM = 64 
  ! Current state:
  integer, save :: parser_state = OUTSIDE_BLOCK
-
- ! CML namespace
+ ! CML namespace:
  character(len=29), parameter :: cmlns = 'http://www.xml-cml.org/schema'
-
- ! State for current potential.
- character(len=20), save :: potid   ! The ID of the potential being looked at...
-
+ ! Opaque XML type for the parser:
  type(xml_t), save :: xp
 
  type two_body_pot
@@ -33,11 +29,19 @@ module cml_read_pot
      character :: atom_1
      character :: atom_2
      real, dimension(4) :: parameters
+     character(len=20) :: potid 
  end type two_body_pot
 
+ ! State for current potential.
+ type(two_body_pot), save :: curpot
 
 contains
 
+!===============================================================================!
+!                                                                               !
+!                                   == PUBLIC SUBS ==                           !
+!                                                                               !
+!===============================================================================!
 
  subroutine cml_read_pots(filename)
 
@@ -55,6 +59,42 @@ contains
 
  end subroutine cml_read_pots
 
+!===============================================================================!
+!                                                                               !
+!                                   == PRIVATE SUBS  ==                         !
+!                                                                               !
+!===============================================================================!
+
+ subroutine init_curpot
+      implicit none
+
+      curpot%name = ""
+      curpot%atom_1 = ""
+      curpot%atom_2 = ""
+      curpot%parameters = (/0.0,0.0,0.0,0.0/)
+      curpot%potid =""
+ end subroutine init_curpot
+
+ subroutine dump_curpot
+      implicit none
+      print*, "==================================================================="
+      print*, "CURPOT has the following elements"
+      print*, "Name: ", curpot%name 
+      print*, "First atom: ", curpot%atom_1 
+      print*, "Second atom: ", curpot%atom_2
+      print*, "Param1: ", curpot%parameters(1)
+      print*, "Param2: ", curpot%parameters(2)
+      print*, "Param3: ", curpot%parameters(3)
+      print*, "Param4: ", curpot%parameters(4)
+      print*, "PotID: ", curpot%potid
+      print*, "==================================================================="
+ end subroutine dump_curpot
+
+!===============================================================================!
+!                                                                               !
+!                                   == SAX CALLBACKS  ==                        !
+!                                                                               !
+!===============================================================================!
 
  subroutine handle_docStart
 
@@ -95,7 +135,9 @@ contains
          parser_state = parser_state + IN_POTENTIALLIST
       !
       ! Are we in a chunk of XML that is intresting
-      ! (a desendent of a potentialList
+      ! (a desendent of a potentialList)? If so we may want to change state and / or
+      !  grab intresting attributes if we are in an intresting state
+      !  Note - attributes only have namespaces if they are given them explicitly!
       !
       else if (parser_state.ge.(OUTSIDE_BLOCK+IN_POTENTIALLIST)) then
           if (localName == 'potentialList') then
@@ -104,6 +146,15 @@ contains
           else if (localName =='potential') then
                print*, "CML read DEBUG: A pot to work with"
                parser_state = parser_state + IN_POTENTIAL
+               if (parser_state == OUTSIDE_BLOCK + IN_POTENTIALLIST + IN_POTENTIAL) then
+                 print*, "************** NEWPOT - parser_state is: ", parser_state, "****************"
+                 call init_curpot
+                 ! FIXME - Store this properly 
+                 if (hasKey(attributes,"id")) then
+                      curpot%potid = getValue(attributes, "", "id")
+                 end if 
+                 print*, "CML read DEBUG: And this has an ID: ", curpot%potid
+               end if
           else if (localName == "arg") then
                parser_state = parser_state + IN_ARG
                print*, "CML read DEBUG: In an argument"
@@ -119,24 +170,15 @@ contains
           else if (localName == "atom") then
               print*, "CML read DEBUG: In an atom"
               parser_state = parser_state + IN_ATOM
+              if (parser_state == OUTSIDE_BLOCK + IN_POTENTIALLIST + IN_POTENTIAL &
+                   & + IN_ATOMARRAY + IN_ATOM) then
+                if (hasKey(attributes, "elementType")) then
+                     ! FIXME - store these properly 
+                     print*, "Atom type is:", getValue(attributes, "", "elementType")
+                end if 
+              end if
           end if
 
-          !  Grab intresting attributes if we are in an intresting state
-          !  Note - attributes only have namespaces if they are given them explicitly!
-          if (parser_state == OUTSIDE_BLOCK + IN_POTENTIALLIST + IN_POTENTIAL &
-               & + IN_ATOMARRAY + IN_ATOM) then
-            if (hasKey(attributes, "elementType")) then
-                 ! FIXME - store these properly 
-                 print*, "Atom type is:", getValue(attributes, "", "elementType")
-            endif 
-          else if (parser_state == OUTSIDE_BLOCK + IN_POTENTIALLIST) then
-            ! FIXME - Store this properly 
-            potid = ""
-            if (hasKey(attributes,"id")) then
-                 potid = getValue(attributes, "", "id")
-            end if 
-            print*, "CML read DEBUG: And this has an ID: ", potid
-          end if
 
      end if
 
@@ -158,6 +200,7 @@ contains
           else if ((localName =='potential').and.(namespaceURI == CMLNS)) then
               print*, "CML read DEBUG: Out of potential"
               parser_state = parser_state - IN_POTENTIAL
+              call dump_curpot
           else if ((localName == "arg").and.(namespaceURI == CMLNS)) then
               print*, "CML read DEBUG: Out of arg"
               parser_state = parser_state - IN_ARG
