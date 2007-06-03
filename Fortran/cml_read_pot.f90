@@ -3,6 +3,8 @@ module cml_read_pot
  use FoX_sax
  implicit none
 
+ private 
+ public :: cml_read_pots 
 
 
  ! Sate of the SAX parser
@@ -36,6 +38,7 @@ module cml_read_pot
 
 contains
 
+
  subroutine cml_read_pots(filename)
 
       character(len=*) :: filename
@@ -52,11 +55,13 @@ contains
 
  end subroutine cml_read_pots
 
+
  subroutine handle_docStart
 
       print*, "CML read DEBUG: At start of document"
 
  end subroutine handle_docStart
+
  
  subroutine handle_chars(chars)
 
@@ -70,6 +75,7 @@ contains
       end if
 
  end subroutine handle_chars
+
 
  subroutine handle_startElement(namespaceURI, localName, QName, attributes)
       character(len=*), intent(in) :: namespaceURI
@@ -135,6 +141,7 @@ contains
      end if
 
  end subroutine handle_startElement
+
 
  subroutine handle_endElement(namespaceURI, localName, QName)
      character(len=*), intent(in) :: namespaceURI
