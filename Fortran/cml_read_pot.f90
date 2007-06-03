@@ -26,14 +26,15 @@ module cml_read_pot
 
  type two_body_pot
      character :: name
-     character :: atom_1
-     character :: atom_2
+     character(len=20), dimension(2) :: atoms
      real, dimension(4) :: parameters
      character(len=20) :: potid 
  end type two_body_pot
 
  ! State for current potential.
  type(two_body_pot), save :: curpot
+ integer, save :: next_pot_param = 1
+ integer, save :: next_pot_atom = 1
 
 contains
 
@@ -69,10 +70,13 @@ contains
       implicit none
 
       curpot%name = ""
-      curpot%atom_1 = ""
-      curpot%atom_2 = ""
+      curpot%atoms(1) = ""
+      curpot%atoms(2) = ""
       curpot%parameters = (/0.0,0.0,0.0,0.0/)
       curpot%potid =""
+
+      next_pot_param = 1
+      next_pot_atom = 1
  end subroutine init_curpot
 
  subroutine dump_curpot
@@ -80,8 +84,8 @@ contains
       print*, "==================================================================="
       print*, "CURPOT has the following elements"
       print*, "Name: ", curpot%name 
-      print*, "First atom: ", curpot%atom_1 
-      print*, "Second atom: ", curpot%atom_2
+      print*, "First atom: ", curpot%atoms(1)
+      print*, "Second atom: ", curpot%atoms(2)
       print*, "Param1: ", curpot%parameters(1)
       print*, "Param2: ", curpot%parameters(2)
       print*, "Param3: ", curpot%parameters(3)
@@ -112,6 +116,9 @@ contains
          print*, "CML read DEBUG: HANDLE_CHARS was called for argument: ", chars
       elseif (parser_state == (OUTSIDE_BLOCK + IN_POTENTIALLIST + IN_POTENTIAL + IN_PARAMETER + IN_SCALAR) ) then 
          print*, "CML read DEBUG: HANDLE_CHARS was called for parameters: ", chars
+         read (chars, *) curpot%parameters(next_pot_param)
+         print*, "debug real is: ", curpot%parameters(next_pot_param)
+         next_pot_param = next_pot_param + 1
       end if
 
  end subroutine handle_chars
@@ -174,7 +181,9 @@ contains
                    & + IN_ATOMARRAY + IN_ATOM) then
                 if (hasKey(attributes, "elementType")) then
                      ! FIXME - store these properly 
-                     print*, "Atom type is:", getValue(attributes, "", "elementType")
+                     curpot%atoms(next_pot_atom) = getValue(attributes, "", "elementType")
+                     print*, "Atom type is:", curpot%atoms(next_pot_atom)
+                     next_pot_atom = next_pot_atom + 1
                 end if 
               end if
           end if
