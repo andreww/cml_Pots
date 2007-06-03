@@ -28,6 +28,7 @@ module cml_read_pot
      character :: name
      character(len=20), dimension(2) :: atoms
      real, dimension(4) :: parameters
+     character(len=100), dimension(4) :: parameter_name
      character(len=20) :: potid 
  end type two_body_pot
 
@@ -35,6 +36,7 @@ module cml_read_pot
  type(two_body_pot), save :: curpot
  integer, save :: next_pot_param = 1
  integer, save :: next_pot_atom = 1
+ integer, save :: next_parameter_name = 1
 
 contains
 
@@ -77,20 +79,21 @@ contains
 
       next_pot_param = 1
       next_pot_atom = 1
+      next_parameter_name = 1
  end subroutine init_curpot
 
  subroutine dump_curpot
       implicit none
       print*, "==================================================================="
       print*, "CURPOT has the following elements"
-      print*, "Name: ", curpot%name 
-      print*, "First atom: ", curpot%atoms(1)
-      print*, "Second atom: ", curpot%atoms(2)
-      print*, "Param1: ", curpot%parameters(1)
-      print*, "Param2: ", curpot%parameters(2)
-      print*, "Param3: ", curpot%parameters(3)
-      print*, "Param4: ", curpot%parameters(4)
-      print*, "PotID: ", curpot%potid
+      print*, "Name: ", trim(curpot%name)
+      print*, "First atom: ", trim(curpot%atoms(1))
+      print*, "Second atom: ", trim(curpot%atoms(2))
+      print*, "Param1: (", trim(curpot%parameter_name(1)), "): ", curpot%parameters(1)
+      print*, "Param2: (",  trim(curpot%parameter_name(2)), "): ", curpot%parameters(2)
+      print*, "Param3: (",  trim(curpot%parameter_name(3)), "): ", curpot%parameters(3)
+      print*, "Param4: (",  trim(curpot%parameter_name(4)), "): ", curpot%parameters(4)
+      print*, "PotID: ", trim(curpot%potid)
       print*, "==================================================================="
  end subroutine dump_curpot
 
@@ -171,6 +174,14 @@ contains
           else if (localName == "parameter") then 
                parser_state = parser_state + IN_PARAMETER
                print*, "CML read DEBUG: In a parameter"
+              if (parser_state == OUTSIDE_BLOCK + IN_POTENTIALLIST + IN_POTENTIAL &
+                   & + IN_PARAMETER) then
+                if (hasKey(attributes, "dictRef")) then
+                     ! FIXME - store these properly 
+                     curpot%parameter_name(next_parameter_name) = getValue(attributes, "", "dictRef")
+                     next_parameter_name = next_parameter_name + 1
+                end if 
+              end if
           else if (localName == "atomArray") then
               print*, "CML read DEBUG: In an atomArray"
               parser_state = parser_state + IN_ATOMARRAY
