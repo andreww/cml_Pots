@@ -4,9 +4,10 @@ module cml_read_pot
  implicit none
 
 
- ! Sate of the SAX parser
- integer, save :: parser_state = 0
 
+ ! Sate of the SAX parser
+ ! Known states:
+ integer, parameter :: OUTSIDE_BLOCK = 0
  integer, parameter :: IN_POTENTIALLIST = 1
  integer, parameter :: IN_POTENTIAL = 2
  integer, parameter :: IN_ARG = 4
@@ -14,6 +15,9 @@ module cml_read_pot
  integer, parameter :: IN_PARAMETER = 16
  integer, parameter :: IN_ATOMARRAY = 32
  integer, parameter :: IN_ATOM = 64 
+ ! Current state:
+ integer, save :: parser_state = OUTSIDE_BLOCK
+
  ! CML namespace
  character(len=29), parameter :: cmlns = 'http://www.xml-cml.org/schema'
 
@@ -59,9 +63,9 @@ contains
   character(len=*), intent(in) :: chars
   
    print*, "CML read DEBUG: HANDLE_CHARS was called with parser_state:  ", parser_state
-  if (parser_state == (IN_POTENTIALLIST + IN_POTENTIAL + IN_ARG + IN_SCALAR) ) then 
+  if (parser_state == (OUTSIDE_BLOCK + IN_POTENTIALLIST + IN_POTENTIAL + IN_ARG + IN_SCALAR) ) then 
    print*, "CML read DEBUG: HANDLE_CHARS was called for argument: ", chars
-  elseif (parser_state == (IN_POTENTIALLIST + IN_POTENTIAL + IN_PARAMETER + IN_SCALAR) ) then 
+  elseif (parser_state == (OUTSIDE_BLOCK + IN_POTENTIALLIST + IN_POTENTIAL + IN_PARAMETER + IN_SCALAR) ) then 
    print*, "CML read DEBUG: HANDLE_CHARS was called for parameters: ", chars
   end if
 
@@ -73,15 +77,21 @@ contains
       character(len=*), intent(in) :: QName
       type(dictionary_t), intent(in) :: attributes
 
-  ! We are not intrested in other namespaces
-  if (namespaceURI /= CMLNS) return
-      
-!
-! Are we in a chunk of XML that is intresting
-! (a desendent of a potentialList AND in the 
-! XML namespace
-!
-     if ((parser_state.ge.IN_POTENTIALLIST).and.(namespaceURI == CMLNS)) then
+      ! We are not intrested in other namespaces
+      if (namespaceURI /= CMLNS) then
+          ! DO NOTHING
+      !
+      ! Ok then, is this the start of an intresting chunk of 
+      ! XML?
+      !
+      else if ((localName == 'potentialList').and.(parser_state == OUTSIDE_BLOCK)) then
+         print*, "CML read DEBUG: Now in Potential list"
+         parser_state = parser_state + IN_POTENTIALLIST
+      !
+      ! Are we in a chunk of XML that is intresting
+      ! (a desendent of a potentialList
+      !
+      else if (parser_state.ge.(OUTSIDE_BLOCK+IN_POTENTIALLIST)) then
           if (localName == 'potentialList') then
                 stop "Nested Potential lists are BAD - stopping FIXME"
 ! FIXME Should handle this stop nicly
@@ -112,20 +122,13 @@ contains
           end if
 
 !  Grab intresting attributes if we are in an intresting state
-          if (parser_state == IN_POTENTIALLIST + IN_POTENTIAL &
+          if (parser_state == OUTSIDE_BLOCK + IN_POTENTIALLIST + IN_POTENTIAL &
                & + IN_ATOMARRAY + IN_ATOM) then
             if (hasKey(attributes, "elementType")) then
                  print*, "Atom type is:", getValue(attributes, "", "elementType")
             endif 
           end if
 
-!
-! Ok then, is this the start of an intresting chunk of 
-! XML?
-!
-     else if ((localName == 'potentialList').and.(namespaceURI == CMLNS)) then
-         print*, "CML read DEBUG: Now in Potential list"
-         parser_state = parser_state + IN_POTENTIALLIST
      end if
 
  end subroutine handle_startElement
@@ -138,7 +141,7 @@ contains
   ! We are not intrested in other namespaces
   if (namespaceURI /= CMLNS) return
 
-  if (parser_state.ge.1) then
+  if (parser_state.ge.(OUTSIDE_BLOCK + IN_POTENTIALLIST)) then
    if ((localName == 'potentialList').and.(namespaceURI == CMLNS)) then
      parser_state = parser_state - IN_POTENTIALLIST
      print*, "CML read DEBUG: Out of Pot list"
