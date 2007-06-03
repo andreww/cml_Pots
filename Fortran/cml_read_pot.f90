@@ -93,17 +93,11 @@ contains
       !
       else if (parser_state.ge.(OUTSIDE_BLOCK+IN_POTENTIALLIST)) then
           if (localName == 'potentialList') then
+                ! FIXME Should handle this stop nicly
                 stop "Nested Potential lists are BAD - stopping FIXME"
-! FIXME Should handle this stop nicly
           else if (localName =='potential') then
                print*, "CML read DEBUG: A pot to work with"
                parser_state = parser_state + IN_POTENTIAL
-               potid = ""
-               if (hasKey(attributes,"id")) then
-!  Note - attributes only have namespaces if they are given them explicitly!
-                   potid = getValue(attributes, "", "id")
-               end if 
-               print*, "CML read DEBUG: And this has an ID: ", potid
           else if (localName == "arg") then
                parser_state = parser_state + IN_ARG
                print*, "CML read DEBUG: In an argument"
@@ -121,12 +115,21 @@ contains
               parser_state = parser_state + IN_ATOM
           end if
 
-!  Grab intresting attributes if we are in an intresting state
+          !  Grab intresting attributes if we are in an intresting state
+          !  Note - attributes only have namespaces if they are given them explicitly!
           if (parser_state == OUTSIDE_BLOCK + IN_POTENTIALLIST + IN_POTENTIAL &
                & + IN_ATOMARRAY + IN_ATOM) then
             if (hasKey(attributes, "elementType")) then
+                 ! FIXME - store these properly 
                  print*, "Atom type is:", getValue(attributes, "", "elementType")
             endif 
+          else if (parser_state == OUTSIDE_BLOCK + IN_POTENTIALLIST) then
+            ! FIXME - Store this properly 
+            potid = ""
+            if (hasKey(attributes,"id")) then
+                 potid = getValue(attributes, "", "id")
+            end if 
+            print*, "CML read DEBUG: And this has an ID: ", potid
           end if
 
      end if
