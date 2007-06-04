@@ -21,7 +21,25 @@ class potential:
            document by the caller."""
         NS = "{http://www.w3.org/1999/xhtml}"
         root = lxml.etree.Element(NS+"div", attrib={"id": "CMLPotential"})
-        # TODO - add the rest of the markup here
+
+        # TODO - add the rest of the markup here 
+        metadata = lxml.etree.SubElement(root, NS+"h3")
+        metadata.text = "Metadata"
+        metadata_list = lxml.etree.SubElement(metadata, NS+"ul")
+        for MDkey in self.metadata.keys():
+            metadata_list_element = lxml.etree.SubElement(metadata_list, NS+"li")
+            metadata_list_element.text = MDkey + ": " + self.metadata[MDkey]
+
+        #print self.metadata
+        parameters = lxml.etree.SubElement(root, NS+"h3")
+        parameters.text = "Parameters"
+        #print self.parameters
+        #print self.parameterUnits
+        #print self.parameterRefs
+        arguments = lxml.etree.SubElement(root, NS+"h3")
+        arguments.text = "Arguments"
+        #print self.arguments
+
         # TODO - include argument to turn on and embedd SVG
         document = lxml.etree.ElementTree(root)
         return document
