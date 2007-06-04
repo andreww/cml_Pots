@@ -1,7 +1,7 @@
 <cml xmlns="http://www.xml-cml.org/schema" xmlns:m="http://www.w3.org/1998/Math/MathML">
 <!-- A hand constructed CML encoded buckingham potential 
      based on Gulp's current (i.e. new) output with changes 
-     to enable usefull applications to be constructed     -->
+     to enable usefull applications to be constructed.     -->
   <potentialList>
     <potential id="1" dictRef="mypotentialDict:buckingham">
     <!-- Or should this dict ref tell us what the potential is used for?-->
