@@ -224,5 +224,19 @@ if __name__ == "__main__":
             svg = mypot.asSVG(1.1, 10, 0.1)
             svg.write(destfile)
         elif command == 'html':
+            NS = "{http://www.w3.org/1999/xhtml}"
             html = mypot.asXHTML()
-            html.write(destfile)
+            # In order to be usable for testing this needs wrapping in minimal 
+            # HTML so as to be valid
+            htmlroot = lxml.etree.Element(NS+"html")
+            head = lxml.etree.SubElement(htmlroot, NS+"head")
+            title = lxml.etree.SubElement(head, NS+"title")
+            title.text = "Page Title"
+            body = lxml.etree.SubElement(htmlroot, NS+"body")
+            body.set("bgcolor", "#ffffff")
+            body.text = "Hello, World!"
+            # Append the div
+            htmlroot.append(html.getroot())
+            # Build the tree and serialise
+            htmldoc = lxml.etree.ElementTree(htmlroot) 
+            htmldoc.write(destfile)
