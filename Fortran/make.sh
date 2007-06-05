@@ -1,5 +1,5 @@
 cd FoX
-./config/configure
+./config/configure FC=g95
 make
 cd ..
 g95  -Wall -c cml_read_pot.f90 `./FoX/FoX-config --fcflags --sax`
