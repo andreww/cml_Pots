@@ -25,14 +25,19 @@ class potential:
         # TODO - add the rest of the markup here 
         metadata = lxml.etree.SubElement(root, NS+"h3")
         metadata.text = "Metadata"
-        metadata_list = lxml.etree.SubElement(metadata, NS+"ul")
+        metadata_list = lxml.etree.SubElement(root, NS+"ul")
         for MDkey in self.metadata.keys():
             metadata_list_element = lxml.etree.SubElement(metadata_list, NS+"li")
             metadata_list_element.text = MDkey + ": " + self.metadata[MDkey]
 
         #print self.metadata
-        parameters = lxml.etree.SubElement(root, NS+"h3")
-        parameters.text = "Parameters"
+        parameters = lxml.etree.SubElement(root, NS+"div", attrib={"id": "CMLPotential_parameters"})
+        parameters_title = lxml.etree.SubElement(parameters, NS+"h3")
+        parameters_title.text = "Parameters"
+        parameters_list = lxml.etree.SubElement(parameters, NS+"ul")
+        for ParamKey in self.parameters.keys():
+            parameters_list_element = lxml.etree.SubElement(parameters_list, NS+"li")
+            parameters_list_element.text = ParamKey + ": " + self.parameters[ParamKey]
         #print self.parameters
         #print self.parameterUnits
         #print self.parameterRefs
