@@ -8,7 +8,8 @@ module potential_list
  private 
  public :: number_of_pots, potential_list_init, potential_list_exit, &
       &    read_potential, add_potential, next_potential, &
-      &    add_potential_parameter, add_potential_parameter_name
+      &    add_potential_parameter, add_potential_parameter_name, &
+      &    add_potential_atom
 
  integer:: number_of_pots 
 
@@ -48,11 +49,8 @@ contains
  end subroutine potential_list_exit
 
 
- subroutine add_potential (atom1, atom2, potid)
+ subroutine add_potential (potid)
 
-     character(len=*), intent(in) :: atom1, atom2
-     !real, dimension(:), intent(in) :: parameters
-     !character(len=*), dimension(:), intent(in) :: parameter_name
      character(len=*), intent(in) :: potid
 
      type(two_body_pot), pointer :: new_pot
@@ -62,18 +60,32 @@ contains
      write_pointer%next_pot => new_pot
      write_pointer => new_pot
 
-     new_pot%atoms(1) = atom1
-     new_pot%atoms(2) = atom2
      new_pot%potid = potid
-
-     !allocate(new_pot%parameters(size(parameters)))
-     !allocate(new_pot%parameter_name(size(parameter_name)))
-     !new_pot%parameters(:) = parameters(:)
-     !new_pot%parameter_name(:) = parameter_name(:)
 
      number_of_pots = number_of_pots + 1
 
  end subroutine add_potential
+
+ subroutine add_potential_atom(atom_name)
+    character(len=*), intent(in) :: atom_name
+
+    character(len=ATOM_NAME_LENGTH), dimension(:), allocatable :: tmp_atoms
+    integer :: atoms_size
+
+    if (associated(write_pointer%atoms)) then
+        atoms_size = size(write_pointer%atoms)
+        allocate(tmp_atoms(atoms_size))
+        tmp_atoms = write_pointer%atoms
+        deallocate(write_pointer%atoms)
+        allocate(write_pointer%atoms(atoms_size+1))
+        write_pointer%atoms(1:atoms_size) = tmp_atoms(:)
+        write_pointer%atoms(atoms_size+1) = atom_name
+        deallocate(tmp_atoms)
+    else
+        allocate(write_pointer%atoms(1))
+        write_pointer%atoms(1) = atom_name
+    endif
+ end subroutine add_potential_atom
 
  subroutine add_potential_parameter(param)
     real, intent(in) :: param
@@ -162,6 +174,7 @@ contains
      endif
      deallocate(this_pot%parameters)
      deallocate(this_pot%parameter_name)
+     deallocate(this_pot%atoms)
      deallocate(this_pot)
 
  end subroutine remove_pots

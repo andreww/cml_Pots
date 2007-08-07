@@ -29,11 +29,7 @@ module cml_read_pot
  ! Opaque XML type for the parser:
  type(xml_t), save :: xp
 
- character(len=20), dimension(2) :: atom_names
  character(len=20) :: potid 
-
- ! State for current potential.
- integer, save :: next_pot_atom = 1
 
 contains
 
@@ -129,11 +125,11 @@ contains
                if (parser_state == OUTSIDE_BLOCK + IN_POTENTIALLIST + IN_POTENTIAL) then
                  if (DEBUG) print*, "************** NEWPOT - parser_state is: ", parser_state, "****************"
                  ! FIXME - Store this properly 
-                 next_pot_atom = 1
                  if (hasKey(attributes,"id")) then
                       potid = getValue(attributes, "", "id")
                  end if 
                  if (DEBUG) print*, "CML read DEBUG: And this has an ID: ", potid
+                 call add_potential(trim(potid))
                end if
           else if (localName == "arg") then
                parser_state = parser_state + IN_ARG
@@ -159,10 +155,8 @@ contains
               if (parser_state == OUTSIDE_BLOCK + IN_POTENTIALLIST + IN_POTENTIAL &
                    & + IN_ATOMARRAY + IN_ATOM) then
                 if (hasKey(attributes, "elementType")) then
-                     ! FIXME - store these properly 
-                     atom_names(next_pot_atom) = getValue(attributes, "", "elementType")
-                     if (DEBUG) print*, "Atom type is:", atom_names(next_pot_atom)
-                     next_pot_atom = next_pot_atom + 1
+                     call add_potential_atom(getValue(attributes, "", "elementType"))
+                     if (DEBUG) print*, "Atom type is:", getValue(attributes, "", "elementType")
                 end if 
               end if
           end if
@@ -201,8 +195,6 @@ contains
               if (DEBUG) print*, "CML read DEBUG: Out of atomArray"
               parser_state = parser_state - IN_ATOMARRAY
               print*, "about to add pot"
-              call add_potential(trim(atom_names(1)), trim(atom_names(2)), & 
-                  & trim(potid))
               print*, "added pot"
           else if (localName == "atom") then
               if (DEBUG) print*, "CML read DEBUG: Out of atom"

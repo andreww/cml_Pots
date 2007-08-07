@@ -8,7 +8,7 @@ module two_body_pot_str
 
  type two_body_pot
      character :: name
-     character(len=ATOM_NAME_LENGTH), dimension(2) :: atoms
+     character(len=ATOM_NAME_LENGTH), pointer, dimension(:) :: atoms
      real, pointer, dimension(:) :: parameters
      character(len=PARAMETER_NAME_LENGTH), pointer, dimension(:) :: parameter_name
      character(len=POTID_LENGTH) :: potid 
