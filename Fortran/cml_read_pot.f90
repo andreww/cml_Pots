@@ -7,6 +7,7 @@ module cml_read_pot
  private 
  public :: cml_read_pots 
 
+ logical, parameter :: DEBUG = .false.
 
  ! Sate for the SAX parser
  ! Known states:
@@ -18,13 +19,18 @@ module cml_read_pot
  integer, parameter :: IN_PARAMETER = 16
  integer, parameter :: IN_ATOMARRAY = 32
  integer, parameter :: IN_ATOM = 64 
+
  ! Current state:
  integer, save :: parser_state = OUTSIDE_BLOCK
+
  ! CML namespace:
  character(len=29), parameter :: cmlns = 'http://www.xml-cml.org/schema'
+
  ! Opaque XML type for the parser:
  type(xml_t), save :: xp
 
+ ! FIXME - this structure should be replaced with functions to add bits 
+ ! at a time to the potential_list
  type two_body_pot_local
      character :: name
      character(len=20), dimension(2) :: atoms
@@ -114,7 +120,7 @@ contains
 
  subroutine handle_docStart
 
-      print*, "CML read DEBUG: At start of document"
+      if (DEBUG) print*, "CML read DEBUG: At start of document"
 
  end subroutine handle_docStart
 
@@ -123,13 +129,13 @@ contains
 
       character(len=*), intent(in) :: chars
   
-         print*, "CML read DEBUG: HANDLE_CHARS was called with parser_state:  ", parser_state
+         if (DEBUG) print*, "CML read DEBUG: HANDLE_CHARS was called with parser_state:  ", parser_state
       if (parser_state == (OUTSIDE_BLOCK + IN_POTENTIALLIST + IN_POTENTIAL + IN_ARG + IN_SCALAR) ) then 
-         print*, "CML read DEBUG: HANDLE_CHARS was called for argument: ", chars
+         if (DEBUG) print*, "CML read DEBUG: HANDLE_CHARS was called for argument: ", chars
       elseif (parser_state == (OUTSIDE_BLOCK + IN_POTENTIALLIST + IN_POTENTIAL + IN_PARAMETER + IN_SCALAR) ) then 
-         print*, "CML read DEBUG: HANDLE_CHARS was called for parameters: ", chars
+         if (DEBUG) print*, "CML read DEBUG: HANDLE_CHARS was called for parameters: ", chars
          read (chars, *) curpot%parameters(next_pot_param)
-         print*, "debug real is: ", curpot%parameters(next_pot_param)
+         if (DEBUG) print*, "debug real is: ", curpot%parameters(next_pot_param)
          next_pot_param = next_pot_param + 1
       end if
 
@@ -150,7 +156,7 @@ contains
       ! XML?
       !
       else if ((localName == 'potentialList').and.(parser_state == OUTSIDE_BLOCK)) then
-         print*, "CML read DEBUG: Now in Potential list"
+         if (DEBUG) print*, "CML read DEBUG: Now in Potential list"
          parser_state = parser_state + IN_POTENTIALLIST
       !
       ! Are we in a chunk of XML that is intresting
@@ -163,26 +169,26 @@ contains
                 ! FIXME Should handle this stop nicly
                 stop "Nested Potential lists are BAD - stopping FIXME"
           else if (localName =='potential') then
-               print*, "CML read DEBUG: A pot to work with"
+               if (DEBUG) print*, "CML read DEBUG: A pot to work with"
                parser_state = parser_state + IN_POTENTIAL
                if (parser_state == OUTSIDE_BLOCK + IN_POTENTIALLIST + IN_POTENTIAL) then
-                 print*, "************** NEWPOT - parser_state is: ", parser_state, "****************"
+                 if (DEBUG) print*, "************** NEWPOT - parser_state is: ", parser_state, "****************"
                  call init_curpot
                  ! FIXME - Store this properly 
                  if (hasKey(attributes,"id")) then
                       curpot%potid = getValue(attributes, "", "id")
                  end if 
-                 print*, "CML read DEBUG: And this has an ID: ", curpot%potid
+                 if (DEBUG) print*, "CML read DEBUG: And this has an ID: ", curpot%potid
                end if
           else if (localName == "arg") then
                parser_state = parser_state + IN_ARG
-               print*, "CML read DEBUG: In an argument"
+               if (DEBUG) print*, "CML read DEBUG: In an argument"
           else if (localName == "scalar") then
                parser_state = parser_state + IN_SCALAR
-               print*, "CML read DEBUG: In a scalar"
+               if (DEBUG) print*, "CML read DEBUG: In a scalar"
           else if (localName == "parameter") then 
                parser_state = parser_state + IN_PARAMETER
-               print*, "CML read DEBUG: In a parameter"
+               if (DEBUG) print*, "CML read DEBUG: In a parameter"
               if (parser_state == OUTSIDE_BLOCK + IN_POTENTIALLIST + IN_POTENTIAL &
                    & + IN_PARAMETER) then
                 if (hasKey(attributes, "dictRef")) then
@@ -192,17 +198,17 @@ contains
                 end if 
               end if
           else if (localName == "atomArray") then
-              print*, "CML read DEBUG: In an atomArray"
+              if (DEBUG) print*, "CML read DEBUG: In an atomArray"
               parser_state = parser_state + IN_ATOMARRAY
           else if (localName == "atom") then
-              print*, "CML read DEBUG: In an atom"
+              if (DEBUG) print*, "CML read DEBUG: In an atom"
               parser_state = parser_state + IN_ATOM
               if (parser_state == OUTSIDE_BLOCK + IN_POTENTIALLIST + IN_POTENTIAL &
                    & + IN_ATOMARRAY + IN_ATOM) then
                 if (hasKey(attributes, "elementType")) then
                      ! FIXME - store these properly 
                      curpot%atoms(next_pot_atom) = getValue(attributes, "", "elementType")
-                     print*, "Atom type is:", curpot%atoms(next_pot_atom)
+                     if (DEBUG) print*, "Atom type is:", curpot%atoms(next_pot_atom)
                      next_pot_atom = next_pot_atom + 1
                 end if 
               end if
@@ -225,26 +231,26 @@ contains
      if (parser_state.ge.(OUTSIDE_BLOCK + IN_POTENTIALLIST)) then
          if ((localName == 'potentialList').and.(namespaceURI == CMLNS)) then
               parser_state = parser_state - IN_POTENTIALLIST
-              print*, "CML read DEBUG: Out of Pot list"
+              if (DEBUG) print*, "CML read DEBUG: Out of Pot list"
           else if ((localName =='potential').and.(namespaceURI == CMLNS)) then
-              print*, "CML read DEBUG: Out of potential"
+              if (DEBUG) print*, "CML read DEBUG: Out of potential"
               parser_state = parser_state - IN_POTENTIAL
               call dump_curpot
               call add_curpot
           else if ((localName == "arg").and.(namespaceURI == CMLNS)) then
-              print*, "CML read DEBUG: Out of arg"
+              if (DEBUG) print*, "CML read DEBUG: Out of arg"
               parser_state = parser_state - IN_ARG
           else if ((localName == "scalar").and.(namespaceURI == CMLNS)) then
-              print*, "CML read DEBUG: Out of scalar"
+              if (DEBUG) print*, "CML read DEBUG: Out of scalar"
               parser_state = parser_state - IN_SCALAR
           else if ((localName == "parameter").and.(namespaceURI == CMLNS)) then
-              print*, "CML read DEBUG: Out of parameter"
+              if (DEBUG) print*, "CML read DEBUG: Out of parameter"
               parser_state = parser_state - IN_PARAMETER
           else if (localName == "atomArray") then
-              print*, "CML read DEBUG: Out of atomArray"
+              if (DEBUG) print*, "CML read DEBUG: Out of atomArray"
               parser_state = parser_state - IN_ATOMARRAY
           else if (localName == "atom") then
-              print*, "CML read DEBUG: Out of atom"
+              if (DEBUG) print*, "CML read DEBUG: Out of atom"
               parser_state = parser_state - IN_ATOM
          end if
      end if
