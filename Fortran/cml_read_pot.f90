@@ -29,24 +29,11 @@ module cml_read_pot
  ! Opaque XML type for the parser:
  type(xml_t), save :: xp
 
- ! FIXME - this structure should be replaced with functions to add bits 
- ! at a time to the potential_list
- type two_body_pot_local
-     character :: name
-     character(len=20), dimension(2) :: atoms
-     real, dimension(4) :: parameters
-     character(len=100), dimension(4) :: parameter_name
-     character(len=20) :: potid 
- end type two_body_pot_local
-
  character(len=20), dimension(2) :: atom_names
  character(len=20) :: potid 
 
  ! State for current potential.
- type(two_body_pot_local), save :: curpot
- integer, save :: next_pot_param = 1
  integer, save :: next_pot_atom = 1
- integer, save :: next_parameter_name = 1
 
 contains
 
@@ -78,42 +65,6 @@ contains
 !                                                                               !
 !===============================================================================!
 
- subroutine init_curpot
-      implicit none
-
-      curpot%name = ""
-      curpot%atoms(1) = ""
-      curpot%atoms(2) = ""
-      curpot%parameters = (/0.0,0.0,0.0,0.0/)
-      curpot%potid =""
-
-      next_pot_param = 1
-      next_pot_atom = 1
-      next_parameter_name = 1
- end subroutine init_curpot
-
- subroutine dump_curpot
-      implicit none
-      print*, "==================================================================="
-      print*, "CURPOT has the following elements"
-      print*, "Name: ", trim(curpot%name)
-      print*, "First atom: ", trim(curpot%atoms(1))
-      print*, "Second atom: ", trim(curpot%atoms(2))
-      print*, "Param1: (", trim(curpot%parameter_name(1)), "): ", curpot%parameters(1)
-      print*, "Param2: (",  trim(curpot%parameter_name(2)), "): ", curpot%parameters(2)
-      print*, "Param3: (",  trim(curpot%parameter_name(3)), "): ", curpot%parameters(3)
-      print*, "Param4: (",  trim(curpot%parameter_name(4)), "): ", curpot%parameters(4)
-      print*, "PotID: ", trim(curpot%potid)
-      print*, "==================================================================="
- end subroutine dump_curpot
-
-! subroutine add_curpot
-!      implicit none
-!      print*, "about to add pot"
-!      call add_potential(trim(curpot%atoms(1)), trim(curpot%atoms(2)), curpot%parameters, & 
-!              & curpot%parameter_name, trim(curpot%potid))
-!      print*, "added pot"
-! end subroutine add_curpot
 
 !===============================================================================!
 !                                                                               !
@@ -139,11 +90,8 @@ contains
          if (DEBUG) print*, "CML read DEBUG: HANDLE_CHARS was called for argument: ", chars
       elseif (parser_state == (OUTSIDE_BLOCK + IN_POTENTIALLIST + IN_POTENTIAL + IN_PARAMETER + IN_SCALAR) ) then 
          if (DEBUG) print*, "CML read DEBUG: HANDLE_CHARS was called for parameters: ", chars
-         !read (chars, *) curpot%parameters(next_pot_param)
          read (chars, *) thisparam
          call add_potential_parameter(thisparam)
-         !if (DEBUG) print*, "debug real is: ", curpot%parameters(next_pot_param)
-         next_pot_param = next_pot_param + 1
       end if
 
  end subroutine handle_chars
@@ -180,12 +128,12 @@ contains
                parser_state = parser_state + IN_POTENTIAL
                if (parser_state == OUTSIDE_BLOCK + IN_POTENTIALLIST + IN_POTENTIAL) then
                  if (DEBUG) print*, "************** NEWPOT - parser_state is: ", parser_state, "****************"
-                 call init_curpot
                  ! FIXME - Store this properly 
+                 next_pot_atom = 1
                  if (hasKey(attributes,"id")) then
                       potid = getValue(attributes, "", "id")
                  end if 
-                 if (DEBUG) print*, "CML read DEBUG: And this has an ID: ", curpot%potid
+                 if (DEBUG) print*, "CML read DEBUG: And this has an ID: ", potid
                end if
           else if (localName == "arg") then
                parser_state = parser_state + IN_ARG
@@ -199,10 +147,7 @@ contains
               if (parser_state == OUTSIDE_BLOCK + IN_POTENTIALLIST + IN_POTENTIAL &
                    & + IN_PARAMETER) then
                 if (hasKey(attributes, "dictRef")) then
-                     ! FIXME - store these properly 
                      call add_potential_parameter_name(getValue(attributes, "", "dictRef"))
-                     !curpot%parameter_name(next_parameter_name) = getValue(attributes, "", "dictRef")
-                     !next_parameter_name = next_parameter_name + 1
                 end if 
               end if
           else if (localName == "atomArray") then
@@ -243,8 +188,6 @@ contains
           else if ((localName =='potential').and.(namespaceURI == CMLNS)) then
               if (DEBUG) print*, "CML read DEBUG: Out of potential"
               parser_state = parser_state - IN_POTENTIAL
-              !call dump_curpot
-              !call add_curpot
           else if ((localName == "arg").and.(namespaceURI == CMLNS)) then
               if (DEBUG) print*, "CML read DEBUG: Out of arg"
               parser_state = parser_state - IN_ARG
