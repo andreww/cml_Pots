@@ -2,8 +2,6 @@ module potential_list
 
  implicit none
 
- private 
-! public :: number_of_pots
 
 
 type two_body_pot
@@ -22,6 +20,7 @@ type two_body_pot
 contains 
 
  subroutine potential_list_init()
+     print*, "In potential_list_init"
      allocate (root_pot)
      read_pointer => root_pot
      write_pointer => root_pot
@@ -29,13 +28,14 @@ contains
  end subroutine potential_list_init
 
  subroutine  potential_list_exit()
+     print*, "In potential_list_exit"
 
   if (associated(root_pot%next_pot)) then
      ! Remove this pot, point first_pot at next_pot and try again
      call remove_pots(root_pot%next_pot)
   endif
-  deallocate(read_pointer)
-  deallocate(write_pointer)
+!  deallocate(read_pointer)
+!  deallocate(write_pointer)
   deallocate(root_pot)
 
  end subroutine potential_list_exit
@@ -44,9 +44,13 @@ contains
 
      type(two_body_pot), pointer :: this_pot
 
+     print*, "In remove_pots"
+
      if (associated(this_pot%next_pot)) then
          call remove_pots(this_pot%next_pot)
      endif
+     deallocate(this_pot%parameters)
+     deallocate(this_pot%parameter_name)
      deallocate(this_pot)
 
  end subroutine remove_pots
@@ -61,11 +65,22 @@ contains
 
      type(two_body_pot), pointer :: new_pot
 
+     print*, "In add_potential"
+     print*, "Called with atom1:", atom1
+     print*, "atom2:", atom2
+     print*, "parameters", parameters
+     print*, parameter_name
+     print*, potid
+
      allocate(new_pot)
+     print*, "Done allocation"
      write_pointer%next_pot => new_pot
      write_pointer => write_pointer%next_pot
+     print*, "pointers_moved"
      write_pointer%atoms(1) = atom1
      write_pointer%atoms(2) = atom2
+     allocate(write_pointer%parameters(size(parameters)))
+     allocate(write_pointer%parameter_name(size(parameter_name)))
      write_pointer%parameters(:) = parameters(:)
      write_pointer%parameter_name(:) = parameter_name(:)
      write_pointer%potid = potid
@@ -78,6 +93,8 @@ contains
      real, dimension(:), intent(out) :: parameters
      character(len=*), dimension(:), intent(out) :: parameter_name
      character(len=*), intent(out) :: potid
+
+     print*, "In read_next_potential"
 
      if (associated(read_pointer%next_pot)) then
          read_pointer => read_pointer%next_pot

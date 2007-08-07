@@ -1,6 +1,7 @@
 module cml_read_pot
 
  use FoX_sax
+ use potential_list
  implicit none
 
  private 
@@ -24,16 +25,16 @@ module cml_read_pot
  ! Opaque XML type for the parser:
  type(xml_t), save :: xp
 
- type two_body_pot
+ type two_body_pot_local
      character :: name
      character(len=20), dimension(2) :: atoms
      real, dimension(4) :: parameters
      character(len=100), dimension(4) :: parameter_name
      character(len=20) :: potid 
- end type two_body_pot
+ end type two_body_pot_local
 
  ! State for current potential.
- type(two_body_pot), save :: curpot
+ type(two_body_pot_local), save :: curpot
  integer, save :: next_pot_param = 1
  integer, save :: next_pot_atom = 1
  integer, save :: next_parameter_name = 1
@@ -96,6 +97,14 @@ contains
       print*, "PotID: ", trim(curpot%potid)
       print*, "==================================================================="
  end subroutine dump_curpot
+
+ subroutine add_curpot
+      implicit none
+      print*, "about to add pot"
+      call add_potential(trim(curpot%atoms(1)), trim(curpot%atoms(2)), curpot%parameters, & 
+              & curpot%parameter_name, trim(curpot%potid))
+      print*, "added pot"
+ end subroutine add_curpot
 
 !===============================================================================!
 !                                                                               !
@@ -221,6 +230,7 @@ contains
               print*, "CML read DEBUG: Out of potential"
               parser_state = parser_state - IN_POTENTIAL
               call dump_curpot
+              call add_curpot
           else if ((localName == "arg").and.(namespaceURI == CMLNS)) then
               print*, "CML read DEBUG: Out of arg"
               parser_state = parser_state - IN_ARG
