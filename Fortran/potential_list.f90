@@ -25,7 +25,7 @@ contains
 !===============================================================================!
 
  subroutine potential_list_init()
-     print*, "In potential_list_init"
+
      allocate (root_pot)
      read_pointer => root_pot
      write_pointer => root_pot
@@ -34,7 +34,6 @@ contains
  end subroutine potential_list_init
 
  subroutine  potential_list_exit()
-     print*, "In potential_list_exit"
 
      if (associated(root_pot%next_pot)) then
      ! Remove this pot, point first_pot at next_pot and try again
@@ -57,13 +56,12 @@ contains
 
      type(two_body_pot), pointer :: new_pot
 
-
      allocate(new_pot)
      allocate(new_pot%parameters(size(parameters)))
      allocate(new_pot%parameter_name(size(parameter_name)))
 
      write_pointer%next_pot => new_pot
-     write_pointer => new_pot%next_pot
+     write_pointer => new_pot
 
      new_pot%atoms(1) = atom1
      new_pot%atoms(2) = atom2
