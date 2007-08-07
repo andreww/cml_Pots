@@ -28,6 +28,8 @@ subroutine reportpot()
  character(len=100), dimension(4) :: parameter_name
  real, dimension(4) :: parameters
 
+ print*, "There are ", number_of_pots, " potentials loaded"
+
  call read_next_potential(atom1, atom2, parameters, parameter_name, potid)
  print*, 'READPOT: read_next_potential returned'
  print*, atom1, atom2, parameters, parameter_name, potid

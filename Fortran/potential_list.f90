@@ -2,14 +2,18 @@ module potential_list
 
  implicit none
 
+integer:: number_of_pots 
 
+integer, parameter :: PARAMETER_NAME_LENGTH = 100
+integer, parameter :: POTID_LENGTH = 20
+integer, parameter :: ATOM_NAME_LENGTH = 20
 
 type two_body_pot
      character :: name
-     character(len=20), dimension(2) :: atoms
+     character(len=ATOM_NAME_LENGTH), dimension(2) :: atoms
      real, pointer, dimension(:) :: parameters
-     character(len=100), pointer, dimension(:) :: parameter_name
-     character(len=20) :: potid 
+     character(len=PARAMETER_NAME_LENGTH), pointer, dimension(:) :: parameter_name
+     character(len=POTID_LENGTH) :: potid 
      type(two_body_pot), pointer :: next_pot => null()
  end type two_body_pot
 
@@ -24,19 +28,21 @@ contains
      allocate (root_pot)
      read_pointer => root_pot
      write_pointer => root_pot
+     number_of_pots = 0
 
  end subroutine potential_list_init
 
  subroutine  potential_list_exit()
      print*, "In potential_list_exit"
 
-  if (associated(root_pot%next_pot)) then
+     if (associated(root_pot%next_pot)) then
      ! Remove this pot, point first_pot at next_pot and try again
-     call remove_pots(root_pot%next_pot)
-  endif
+         call remove_pots(root_pot%next_pot)
+     endif
 !  deallocate(read_pointer)
 !  deallocate(write_pointer)
-  deallocate(root_pot)
+     deallocate(root_pot)
+     number_of_pots = 0
 
  end subroutine potential_list_exit
 
@@ -65,25 +71,21 @@ contains
 
      type(two_body_pot), pointer :: new_pot
 
-     print*, "In add_potential"
-     print*, "Called with atom1:", atom1
-     print*, "atom2:", atom2
-     print*, "parameters", parameters
-     print*, parameter_name
-     print*, potid
 
      allocate(new_pot)
-     print*, "Done allocation"
+     allocate(new_pot%parameters(size(parameters)))
+     allocate(new_pot%parameter_name(size(parameter_name)))
+
      write_pointer%next_pot => new_pot
-     write_pointer => write_pointer%next_pot
-     print*, "pointers_moved"
-     write_pointer%atoms(1) = atom1
-     write_pointer%atoms(2) = atom2
-     allocate(write_pointer%parameters(size(parameters)))
-     allocate(write_pointer%parameter_name(size(parameter_name)))
-     write_pointer%parameters(:) = parameters(:)
-     write_pointer%parameter_name(:) = parameter_name(:)
-     write_pointer%potid = potid
+     write_pointer => new_pot%next_pot
+
+     new_pot%atoms(1) = atom1
+     new_pot%atoms(2) = atom2
+     new_pot%parameters(:) = parameters(:)
+     new_pot%parameter_name(:) = parameter_name(:)
+     new_pot%potid = potid
+
+     number_of_pots = number_of_pots + 1
 
  end subroutine add_potential
 
