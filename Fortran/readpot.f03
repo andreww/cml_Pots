@@ -30,9 +30,12 @@ subroutine reportpot()
 
  print*, "There are ", number_of_pots, " potentials loaded"
 
- call read_next_potential(atom1, atom2, parameters, parameter_name, potid)
- print*, 'READPOT: read_next_potential returned'
- print*, atom1, atom2, parameters, parameter_name, potid
+ do 
+     if (.not.next_potential()) exit
+     call read_potential(atom1, atom2, parameters, parameter_name, potid)
+     print*, 'READPOT: read_next_potential returned'
+     print*, atom1, atom2, parameters, parameter_name, potid
+ enddo
 
 end subroutine reportpot
 
