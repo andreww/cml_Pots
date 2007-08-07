@@ -39,6 +39,9 @@ module cml_read_pot
      character(len=20) :: potid 
  end type two_body_pot_local
 
+ character(len=20), dimension(2) :: atom_names
+ character(len=20) :: potid 
+
  ! State for current potential.
  type(two_body_pot_local), save :: curpot
  integer, save :: next_pot_param = 1
@@ -104,13 +107,13 @@ contains
       print*, "==================================================================="
  end subroutine dump_curpot
 
- subroutine add_curpot
-      implicit none
-      print*, "about to add pot"
-      call add_potential(trim(curpot%atoms(1)), trim(curpot%atoms(2)), curpot%parameters, & 
-              & curpot%parameter_name, trim(curpot%potid))
-      print*, "added pot"
- end subroutine add_curpot
+! subroutine add_curpot
+!      implicit none
+!      print*, "about to add pot"
+!      call add_potential(trim(curpot%atoms(1)), trim(curpot%atoms(2)), curpot%parameters, & 
+!              & curpot%parameter_name, trim(curpot%potid))
+!      print*, "added pot"
+! end subroutine add_curpot
 
 !===============================================================================!
 !                                                                               !
@@ -128,14 +131,18 @@ contains
  subroutine handle_chars(chars)
 
       character(len=*), intent(in) :: chars
+
+      real :: thisparam
   
          if (DEBUG) print*, "CML read DEBUG: HANDLE_CHARS was called with parser_state:  ", parser_state
       if (parser_state == (OUTSIDE_BLOCK + IN_POTENTIALLIST + IN_POTENTIAL + IN_ARG + IN_SCALAR) ) then 
          if (DEBUG) print*, "CML read DEBUG: HANDLE_CHARS was called for argument: ", chars
       elseif (parser_state == (OUTSIDE_BLOCK + IN_POTENTIALLIST + IN_POTENTIAL + IN_PARAMETER + IN_SCALAR) ) then 
          if (DEBUG) print*, "CML read DEBUG: HANDLE_CHARS was called for parameters: ", chars
-         read (chars, *) curpot%parameters(next_pot_param)
-         if (DEBUG) print*, "debug real is: ", curpot%parameters(next_pot_param)
+         !read (chars, *) curpot%parameters(next_pot_param)
+         read (chars, *) thisparam
+         call add_potential_parameter(thisparam)
+         !if (DEBUG) print*, "debug real is: ", curpot%parameters(next_pot_param)
          next_pot_param = next_pot_param + 1
       end if
 
@@ -176,7 +183,7 @@ contains
                  call init_curpot
                  ! FIXME - Store this properly 
                  if (hasKey(attributes,"id")) then
-                      curpot%potid = getValue(attributes, "", "id")
+                      potid = getValue(attributes, "", "id")
                  end if 
                  if (DEBUG) print*, "CML read DEBUG: And this has an ID: ", curpot%potid
                end if
@@ -193,8 +200,9 @@ contains
                    & + IN_PARAMETER) then
                 if (hasKey(attributes, "dictRef")) then
                      ! FIXME - store these properly 
-                     curpot%parameter_name(next_parameter_name) = getValue(attributes, "", "dictRef")
-                     next_parameter_name = next_parameter_name + 1
+                     call add_potential_parameter_name(getValue(attributes, "", "dictRef"))
+                     !curpot%parameter_name(next_parameter_name) = getValue(attributes, "", "dictRef")
+                     !next_parameter_name = next_parameter_name + 1
                 end if 
               end if
           else if (localName == "atomArray") then
@@ -207,8 +215,8 @@ contains
                    & + IN_ATOMARRAY + IN_ATOM) then
                 if (hasKey(attributes, "elementType")) then
                      ! FIXME - store these properly 
-                     curpot%atoms(next_pot_atom) = getValue(attributes, "", "elementType")
-                     if (DEBUG) print*, "Atom type is:", curpot%atoms(next_pot_atom)
+                     atom_names(next_pot_atom) = getValue(attributes, "", "elementType")
+                     if (DEBUG) print*, "Atom type is:", atom_names(next_pot_atom)
                      next_pot_atom = next_pot_atom + 1
                 end if 
               end if
@@ -235,8 +243,8 @@ contains
           else if ((localName =='potential').and.(namespaceURI == CMLNS)) then
               if (DEBUG) print*, "CML read DEBUG: Out of potential"
               parser_state = parser_state - IN_POTENTIAL
-              call dump_curpot
-              call add_curpot
+              !call dump_curpot
+              !call add_curpot
           else if ((localName == "arg").and.(namespaceURI == CMLNS)) then
               if (DEBUG) print*, "CML read DEBUG: Out of arg"
               parser_state = parser_state - IN_ARG
@@ -249,6 +257,10 @@ contains
           else if (localName == "atomArray") then
               if (DEBUG) print*, "CML read DEBUG: Out of atomArray"
               parser_state = parser_state - IN_ATOMARRAY
+              print*, "about to add pot"
+              call add_potential(trim(atom_names(1)), trim(atom_names(2)), & 
+                  & trim(potid))
+              print*, "added pot"
           else if (localName == "atom") then
               if (DEBUG) print*, "CML read DEBUG: Out of atom"
               parser_state = parser_state - IN_ATOM

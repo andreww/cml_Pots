@@ -25,8 +25,8 @@ contains
 subroutine reportpot()
 
  character(len=20) :: atom1, atom2, potid
- character(len=100), dimension(4) :: parameter_name
- real, dimension(4) :: parameters
+ character(len=100), dimension(3) :: parameter_name
+ real, dimension(3) :: parameters
 
  print*, "There are ", number_of_pots, " potentials loaded"
 
