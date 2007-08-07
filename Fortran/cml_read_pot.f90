@@ -194,8 +194,6 @@ contains
           else if (localName == "atomArray") then
               if (DEBUG) print*, "CML read DEBUG: Out of atomArray"
               parser_state = parser_state - IN_ATOMARRAY
-              print*, "about to add pot"
-              print*, "added pot"
           else if (localName == "atom") then
               if (DEBUG) print*, "CML read DEBUG: Out of atom"
               parser_state = parser_state - IN_ATOM

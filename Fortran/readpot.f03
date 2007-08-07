@@ -34,7 +34,12 @@ subroutine reportpot()
      if (.not.next_potential()) exit
      call read_potential(atom1, atom2, parameters, parameter_name, potid)
      print*, 'READPOT: read_next_potential returned'
-     print*, atom1, atom2, parameters, parameter_name, potid
+     print*, 'READPOT: potid - ', potid
+     print*, 'READPOT: atom1 - ', atom1
+     print*, 'READPOT: atom2 - ', atom2
+     print*, 'READPOT: parameters - ', parameters
+     print*, 'READPOT: parameter names  - ', parameter_name
+     print*, ''
  enddo
 
 end subroutine reportpot

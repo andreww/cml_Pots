@@ -136,8 +136,6 @@ contains
      character(len=*), dimension(:), intent(out) :: parameter_name
      character(len=*), intent(out) :: potid
 
-     print*, "In read_next_potential"
-
      atom1 = read_pointer%atoms(1)
      atom2 = read_pointer%atoms(2)
      parameters(:) = read_pointer%parameters(:)
