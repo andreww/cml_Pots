@@ -15,7 +15,24 @@ program readpots
  call cml_read_pots(trim(filename))
  print*, 'READPOT: all done for file: ', trim(filename)
 
+ call reportpot()
+
  print*, 'READPOT: exit of potential_list'
  call potential_list_exit()
 
+contains 
+
+subroutine reportpot()
+
+ character(len=20) :: atom1, atom2, potid
+ character(len=100), dimension(4) :: parameter_name
+ real, dimension(4) :: parameters
+
+ call read_next_potential(atom1, atom2, parameters, parameter_name, potid)
+ print*, 'READPOT: read_next_potential returned'
+ print*, atom1, atom2, parameters, parameter_name, potid
+
+end subroutine reportpot
+
 end program readpots
+
