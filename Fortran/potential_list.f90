@@ -18,6 +18,12 @@ module potential_list
 
 contains 
 
+!===============================================================================!
+!                                                                               !
+!                                   == PUBLIC SUBS ==                           !
+!                                                                               !
+!===============================================================================!
+
  subroutine potential_list_init()
      print*, "In potential_list_init"
      allocate (root_pot)
@@ -40,21 +46,6 @@ contains
      number_of_pots = 0
 
  end subroutine potential_list_exit
-
- recursive subroutine remove_pots (this_pot)
-
-     type(two_body_pot), pointer :: this_pot
-
-     print*, "In remove_pots"
-
-     if (associated(this_pot%next_pot)) then
-         call remove_pots(this_pot%next_pot)
-     endif
-     deallocate(this_pot%parameters)
-     deallocate(this_pot%parameter_name)
-     deallocate(this_pot)
-
- end subroutine remove_pots
 
 
  subroutine add_potential (atom1, atom2, parameters, parameter_name, potid)
@@ -110,6 +101,26 @@ contains
          next_potential = .false.
      endif
  end function next_potential
-     
+
+!===============================================================================!
+!                                                                               !
+!                                   == PRIVATE SUBS ==                          !
+!                                                                               !
+!===============================================================================!
+
+ recursive subroutine remove_pots (this_pot)
+
+     type(two_body_pot), pointer :: this_pot
+
+     print*, "In remove_pots"
+
+     if (associated(this_pot%next_pot)) then
+         call remove_pots(this_pot%next_pot)
+     endif
+     deallocate(this_pot%parameters)
+     deallocate(this_pot%parameter_name)
+     deallocate(this_pot)
+
+ end subroutine remove_pots
 
 end module potential_list
