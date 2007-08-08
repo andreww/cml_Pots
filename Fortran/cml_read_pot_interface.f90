@@ -8,6 +8,6 @@ module cml_pot
   use cml_pot_sax, only : cml_read_pots
   use cml_pot_data, only : next_potential, read_potential, number_of_pots, &
          & potential_list_init, potential_list_exit, get_parameter, &
-         & find_parameter
+         & find_parameter, get_potname
 
 end module cml_pot

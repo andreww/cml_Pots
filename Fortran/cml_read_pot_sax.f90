@@ -1,12 +1,14 @@
 module cml_pot_sax
+
  use cml_pot_data
  use FoX_sax
+
  implicit none
 
  private 
  public :: cml_read_pots 
 
- logical, parameter :: DEBUG = .false.
+ logical, parameter :: DEBUG = .true.
 
  ! Sate for the SAX parser
  ! Known states:
@@ -28,7 +30,8 @@ module cml_pot_sax
  ! Opaque XML type for the parser:
  type(xml_t), save :: xp
 
- character(len=20) :: potid 
+ character(len=POTID_LENGTH) :: potid 
+ character(len=POTID_LENGTH) :: potname
 
 contains
 
@@ -126,10 +129,13 @@ contains
                  ! FIXME - Store this properly 
                  if (hasKey(attributes,"id")) then
                       potid = getValue(attributes, "", "id")
-                 end if 
-                 if (DEBUG) print*, "CML read DEBUG: And this has an ID: ", potid
-                 call add_potential(trim(potid))
-               end if
+                 endif 
+                 if (hasKey(attributes,"dictRef")) then
+                      potname = getValue(attributes, "", "dictRef")
+                 endif
+                 if (DEBUG) print*, "CML read DEBUG: And this has an ID: ", potid, " and name: ", potname
+                 call add_potential(trim(potid), trim(potname))
+               endif
           else if (localName == "arg") then
                parser_state = parser_state + IN_ARG
                if (DEBUG) print*, "CML read DEBUG: In an argument"

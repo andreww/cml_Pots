@@ -32,20 +32,17 @@ subroutine reportpot()
 
  do 
      if (.not.next_potential()) exit
-     call read_potential(atom1, atom2, parameters, parameter_name, potid)
-     print*, 'READPOT: read_next_potential returned'
-     print*, 'READPOT: potid - ', potid
-     print*, 'READPOT: atom1 - ', atom1
-     print*, 'READPOT: atom2 - ', atom2
-     print*, 'READPOT: parameters - ', parameters
-     print*, 'READPOT: parameter names  - ', parameter_name
-     print*, ''
-     if (find_parameter('gulp:buckingham.roh')) then
-        roh = get_parameter('gulp:buckingham.roh')
-        print*, 'roh is: ',  roh
-     else 
-        print*, 'roh not found'
-     endif 
+     print*, "Get potname returned: " ,get_potname()
+     if (trim(get_potname()).eq.'mypotentialDict:buckingham') then
+        if (find_parameter('gulp:buckingham.roh')) then
+            roh = get_parameter('gulp:buckingham.roh')
+            print*, 'roh is: ',  roh
+        else 
+            print*, 'roh not found'
+        endif 
+    else
+        print*, 'Do not understand this potential form'
+    endif
 
  enddo
 

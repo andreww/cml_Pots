@@ -9,6 +9,7 @@ module cml_pot_data
       &    read_potential, add_potential, next_potential, &
       &    add_potential_parameter, add_potential_parameter_name, &
       &    add_potential_atom, get_parameter, find_parameter, &
+      &    get_potname, &
       &    two_body_pot, PARAMETER_NAME_LENGTH, POTID_LENGTH, &
       &    ATOM_NAME_LENGTH
 
@@ -16,11 +17,11 @@ module cml_pot_data
 
 
   integer, parameter :: PARAMETER_NAME_LENGTH = 100
-  integer, parameter :: POTID_LENGTH = 20
+  integer, parameter :: POTID_LENGTH = 200
   integer, parameter :: ATOM_NAME_LENGTH = 20
 
   type two_body_pot
-      character :: name
+      character(len=POTID_LENGTH) :: potname
       character(len=ATOM_NAME_LENGTH), pointer, dimension(:) :: atoms
       real, pointer, dimension(:) :: parameters
       character(len=PARAMETER_NAME_LENGTH), pointer, dimension(:) :: parameter_name
@@ -64,9 +65,10 @@ contains
  end subroutine potential_list_exit
 
 
- subroutine add_potential (potid)
+ subroutine add_potential (potid, potname)
 
      character(len=*), intent(in) :: potid
+     character(len=*), intent(in) :: potname
 
      type(two_body_pot), pointer :: new_pot
 
@@ -76,6 +78,7 @@ contains
      write_pointer => new_pot
 
      new_pot%potid = potid
+     new_pot%potname = potname
 
      number_of_pots = number_of_pots + 1
 
@@ -170,6 +173,10 @@ contains
      endif
  end function next_potential
 
+ character(len=POTID_LENGTH) function get_potname()
+    get_potname = read_pointer%potname
+ end function get_potname
+
  logical function find_parameter(parameter_name)
 
      character(len=*), intent(in) :: parameter_name
@@ -195,7 +202,6 @@ contains
      enddo
 
  end function find_parameter
-
 
  real function get_parameter(parameter_name)
 
