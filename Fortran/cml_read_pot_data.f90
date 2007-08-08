@@ -8,7 +8,7 @@ module cml_pot_data
  public :: number_of_pots, potential_list_init, potential_list_exit, &
       &    read_potential, add_potential, next_potential, &
       &    add_potential_parameter, add_potential_parameter_name, &
-      &    add_potential_atom, &
+      &    add_potential_atom, get_parameter, &
       &    two_body_pot, PARAMETER_NAME_LENGTH, POTID_LENGTH, &
       &    ATOM_NAME_LENGTH
 
@@ -169,6 +169,31 @@ contains
          next_potential = .false.
      endif
  end function next_potential
+
+ real function get_parameter(parameter_name)
+
+     character(len=*), intent(in) :: parameter_name
+
+     integer :: num_params
+     integer :: num_params_names 
+     integer :: i
+
+     num_params = size(read_pointer%parameters)
+     num_params_names = size(read_pointer%parameter_name)
+
+     if (num_params.ne.num_params_names) then
+         stop "Internal error in cml_pot_data, get_parameter: array length missmatch"
+     endif
+
+     do i = 1, num_params
+        if ( trim(read_pointer%parameter_name(i)) .eq. trim(parameter_name) ) then
+            get_parameter = read_pointer%parameters(i)
+            exit
+        endif
+     enddo
+
+ end function get_parameter
+     
 
 !===============================================================================!
 !                                                                               !

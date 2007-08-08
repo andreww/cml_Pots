@@ -26,6 +26,7 @@ subroutine reportpot()
  character(len=20) :: atom1, atom2, potid
  character(len=100), dimension(3) :: parameter_name
  real, dimension(3) :: parameters
+ real :: roh
 
  print*, "There are ", number_of_pots, " potentials loaded"
 
@@ -39,6 +40,8 @@ subroutine reportpot()
      print*, 'READPOT: parameters - ', parameters
      print*, 'READPOT: parameter names  - ', parameter_name
      print*, ''
+     roh = get_parameter('gulp:buckingham.roh')
+     print*, 'roh is: ',  roh
  enddo
 
 end subroutine reportpot
