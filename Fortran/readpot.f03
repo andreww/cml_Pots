@@ -40,8 +40,13 @@ subroutine reportpot()
      print*, 'READPOT: parameters - ', parameters
      print*, 'READPOT: parameter names  - ', parameter_name
      print*, ''
-     roh = get_parameter('gulp:buckingham.roh')
-     print*, 'roh is: ',  roh
+     if (find_parameter('gulp:buckingham.roh')) then
+        roh = get_parameter('gulp:buckingham.roh')
+        print*, 'roh is: ',  roh
+     else 
+        print*, 'roh not found'
+     endif 
+
  enddo
 
 end subroutine reportpot
