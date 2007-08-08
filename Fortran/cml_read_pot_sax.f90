@@ -1,7 +1,6 @@
-module cml_read_pot
-
+module cml_pot_sax
+ use cml_pot_data
  use FoX_sax
- use potential_list
  implicit none
 
  private 
@@ -202,4 +201,4 @@ contains
 
  end subroutine handle_endElement
 
-end module cml_read_pot
+end module cml_pot_sax

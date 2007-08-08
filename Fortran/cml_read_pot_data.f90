@@ -1,6 +1,5 @@
-module potential_list
+module cml_pot_data
 
- use two_body_pot_str
 
  implicit none
 
@@ -9,9 +8,25 @@ module potential_list
  public :: number_of_pots, potential_list_init, potential_list_exit, &
       &    read_potential, add_potential, next_potential, &
       &    add_potential_parameter, add_potential_parameter_name, &
-      &    add_potential_atom
+      &    add_potential_atom, &
+      &    two_body_pot, PARAMETER_NAME_LENGTH, POTID_LENGTH, &
+      &    ATOM_NAME_LENGTH
 
  integer:: number_of_pots 
+
+
+  integer, parameter :: PARAMETER_NAME_LENGTH = 100
+  integer, parameter :: POTID_LENGTH = 20
+  integer, parameter :: ATOM_NAME_LENGTH = 20
+
+  type two_body_pot
+      character :: name
+      character(len=ATOM_NAME_LENGTH), pointer, dimension(:) :: atoms
+      real, pointer, dimension(:) :: parameters
+      character(len=PARAMETER_NAME_LENGTH), pointer, dimension(:) :: parameter_name
+      character(len=POTID_LENGTH) :: potid 
+      type(two_body_pot), pointer :: next_pot => null()
+  end type two_body_pot
 
 
  type(two_body_pot), pointer :: root_pot
@@ -177,4 +192,4 @@ contains
 
  end subroutine remove_pots
 
-end module potential_list
+end module cml_pot_data

@@ -1,7 +1,6 @@
 program readpots
 
- use cml_read_pot
- use potential_list
+ use cml_pot
 
  implicit none 
  character(len=80) :: filename
