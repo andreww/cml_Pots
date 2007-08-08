@@ -157,7 +157,6 @@ contains
      atom1 = read_pointer%atoms(1)
      atom2 = read_pointer%atoms(2)
      parameters(:) = read_pointer%parameters(:)
-     print*, read_pointer%parameter_name(:)
      parameter_name(:) = read_pointer%parameter_name(:)
      potid = read_pointer%potid
 
@@ -238,7 +237,6 @@ contains
 
      type(two_body_pot), pointer :: this_pot
 
-     print*, "In remove_pots"
 
      if (associated(this_pot%next_pot)) then
          call remove_pots(this_pot%next_pot)

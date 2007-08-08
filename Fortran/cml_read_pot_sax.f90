@@ -8,7 +8,7 @@ module cml_pot_sax
  private 
  public :: cml_read_pots 
 
- logical, parameter :: DEBUG = .true.
+ logical, parameter :: DEBUG = .false.
 
  ! Sate for the SAX parser
  ! Known states:

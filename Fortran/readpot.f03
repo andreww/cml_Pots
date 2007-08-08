@@ -4,49 +4,44 @@ program readpots
 
  implicit none 
  character(len=80) :: filename
-
- call get_command_argument(1, filename)
+ integer :: i
 
  print*, 'READPOT: init of potential_list'
  call potential_list_init()
 
- print*, 'READPOT: about to read from file: ', trim(filename)
- call cml_read_pots(trim(filename))
- print*, 'READPOT: all done for file: ', trim(filename)
+ do i = 1, command_argument_count()
 
- call reportpot()
+     call get_command_argument(i, filename)
 
- print*, 'READPOT: exit of potential_list'
- call potential_list_exit()
+     print*, 'READPOT: about to read from file: ', trim(filename)
+     call cml_read_pots(trim(filename))
+     print*, 'READPOT: all done for file: ', trim(filename)
 
-contains 
+ enddo
 
-subroutine reportpot()
-
- character(len=20) :: atom1, atom2, potid
- character(len=100), dimension(3) :: parameter_name
- real, dimension(3) :: parameters
- real :: roh
-
- print*, "There are ", number_of_pots, " potentials loaded"
+ print*, "READPOT: There are ", number_of_pots, " potentials loaded"
 
  do 
      if (.not.next_potential()) exit
-     print*, "Get potname returned: " ,get_potname()
      if (trim(get_potname()).eq.'mypotentialDict:buckingham') then
-        if (find_parameter('gulp:buckingham.roh')) then
-            roh = get_parameter('gulp:buckingham.roh')
-            print*, 'roh is: ',  roh
+        print*, 'READPOT: A buckingham potential'
+        if (find_parameter('gulp:buckingham.a').and.find_parameter('gulp:buckingham.roh') &
+	       & .and.find_parameter('gulp:buckingham.c')) then
+            print*, 'READPOT: a is: ',  get_parameter('gulp:buckingham.a')
+            print*, 'READPOT: roh is: ',  get_parameter('gulp:buckingham.roh')
+            print*, 'READPOT: c is: ',  get_parameter('gulp:buckingham.c')
         else 
-            print*, 'roh not found'
+            print*, 'READPOT: Parameters missing - malformed document?'
         endif 
     else
-        print*, 'Do not understand this potential form'
+        print*, 'READPOT: Do not understand this potential form'
     endif
 
  enddo
 
-end subroutine reportpot
+ call potential_list_exit()
+ print*, 'READPOT: exit of potential_list'
+
 
 end program readpots
 
