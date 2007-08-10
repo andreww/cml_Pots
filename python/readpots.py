@@ -54,7 +54,7 @@ class potential:
         as a function of distance. Makes use of Toby White's Pelote language 
         and XSLT transform. Note - the transform gives a buss error on some
         systems, notably my MacBook and debian Sarge systems."""
-        hasXSLTproc = 0 # TODO - find some way to automate this. Set to 1 to enable XSLT
+        hasXSLTproc = 1 # TODO - find some way to automate this. Set to 1 to enable XSLT
 	if (hasXSLTproc == 1):
             transformDoc = lxml.etree.parse(source="XSLT/pelote.xsl")
             transform = lxml.etree.XSLT(transformDoc)

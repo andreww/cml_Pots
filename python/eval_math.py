@@ -206,3 +206,16 @@ class mathml:
 #math = docRoot.xpath("//m:math/m:apply", namespaces)[0]
 #result = mathml(math)
 #print result.evalApply()
+
+if __name__ == "__main__":
+    """Testing feature. Finds m:math and does a parse on it. Note - makes 
+       use of Xpath so cannot be used with element tree module."""
+    import sys
+
+    sourcefile = sys.argv[1]
+
+    docRoot = lxml.etree.parse(source=sourcefile)
+    allmath = docRoot.xpath("//m:math", namespaces)
+    for math in allmath:
+        mathobj = mathml(math, {"a":"a"})
+        mathobj.parseMML()
