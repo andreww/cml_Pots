@@ -207,6 +207,29 @@ class potential:
 
         return
 
+def write_with_PI(document, PI=None, xml_declaration=False, encoding='ascii', pretty_print=False):
+    """ 
+    This is a simple wrapper that serialises an elementTree as an XML document 
+    allowing for the inclusion of a list of Processing Instruction elements
+    """
+    import re
+
+    if ((xml_declaration == False) and (encoding != 'ascii')):
+        xml_declaration = True
+
+    # Write to string...
+    d_root = document.getroot()
+    document_str = lxml.etree.tostring(d_root, xml_declaration=xml_declaration,  pretty_print=pretty_print)   
+
+    if (PI != None):
+        # Get the PI as a string and manipulate the output string
+        PI_str = lxml.etree.tostring(PI)
+        patt = re.compile('(^<\?.*\?>)(.*)', re.DOTALL)
+        m_obj = patt.match(document_str)
+
+    print document_str
+        
+
 
 if __name__ == "__main__":
     import sys
@@ -229,18 +252,21 @@ if __name__ == "__main__":
             mypot.asText()
         elif command == 'pelote':
             pelote =  mypot._pelote(0.1, 10, 0.1)
+            PI = lxml.etree.ProcessingInstruction("xml-stylesheet", 'type="text/xls" herf="http://www.uszla.me.uk/xsl/1.0/pelote/pelote.xls"')
+            write_with_PI (pelote, PI=PI, xml_declaration=True, pretty_print=True)
+            
             #pelote.write(destfile, pretty_print=True)
-            patt = re.compile('(^<\?.*\?>)(.*)', re.DOTALL)
-            p_root = pelote.getroot()
-            str = '<?xml-stylesheet type="text/xls" herf="http://www.uszla.me.uk/xsl/1.0/pelote/pelote.xls"?>\n'
-            docstr = lxml.etree.tostring(p_root, xml_declaration=True,  pretty_print=True)
-            m_obj = patt.match(docstr)
-            if m_obj:
-		print "Matched"
-                str = m_obj.group(1) + str + m_obj.group(2)
-            else:
-                str = str + docstr
-            print str
+           # patt = re.compile('(^<\?.*\?>)(.*)', re.DOTALL)
+           # p_root = pelote.getroot()
+           # str = '<?xml-stylesheet type="text/xls" herf="http://www.uszla.me.uk/xsl/1.0/pelote/pelote.xls"?>\n'
+           # docstr = lxml.etree.tostring(p_root, xml_declaration=True,  pretty_print=True)
+           # m_obj = patt.match(docstr)
+           # if m_obj:
+	#	print "Matched"
+        #        str = m_obj.group(1) + str + m_obj.group(2)
+        #    else:
+        #        str = str + docstr
+        #    print str
         elif command == 'svg':
             svg = mypot.asSVG(1.1, 10, 0.1)
             svg.write(destfile)
